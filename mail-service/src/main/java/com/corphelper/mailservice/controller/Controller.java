@@ -1,5 +1,6 @@
-package com.corphelper.mailservice;
+package com.corphelper.mailservice.controller;
 
+import com.corphelper.mailservice.service.MailCheckerService;
 import lombok.Data;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.GetMapping;
