@@ -11,3 +11,10 @@ eureka:
       defaultZone: ${EUREKA_URI:http://localhost:8761/eureka}
 
 management.endpoints.web.exposure.include: "*"
+
+javax:
+  mail:
+    user: "mm@opox.ru"
+    password: "ioq9plmQ"
+    host: "imap.yandex.ru"
+    folder: "SALE_HELPER"
