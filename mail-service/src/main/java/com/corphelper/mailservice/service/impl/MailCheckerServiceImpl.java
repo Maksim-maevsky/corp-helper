@@ -7,6 +7,7 @@ import lombok.Data;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 import org.apache.commons.io.FilenameUtils;
+import org.apache.commons.io.IOUtils;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
@@ -113,7 +114,8 @@ public class MailCheckerServiceImpl implements MailCheckerService {
         FileInfo fileInfo = new FileInfo();
         fileInfo.setExtension(FilenameUtils.getExtension(fileName));
         fileInfo.setFileName(FilenameUtils.getBaseName(fileName));
-        fileInfo.setFileBytes(part.getInputStream().readAllBytes());
+        byte[] bytes = IOUtils.toByteArray(part.getInputStream());
+        fileInfo.setFileBytes(bytes);
 
         return fileInfo;
     }

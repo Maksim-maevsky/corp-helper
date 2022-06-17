@@ -4,6 +4,20 @@ spring:
   cloud:
     config:
       uri: http://localhost:9888
+  datasource:
+    driver-class-name: org.postgresql.Driver
+    password: root
+    url: jdbc:postgresql://localhost:5432/price_parser
+    username: postgres
+    sql:
+      init:
+        mode: always
+  jpa:
+    hibernate:
+      ddl-auto: none
+    show-sql: true
+    open-in-view: false
+
 
 eureka:
   client:
@@ -11,3 +25,6 @@ eureka:
       defaultZone: ${EUREKA_URI:http://localhost:8761/eureka}
 
 management.endpoints.web.exposure.include: "*"
+
+file:
+  path: "/corp-helper/mail-parser/file-store1/"

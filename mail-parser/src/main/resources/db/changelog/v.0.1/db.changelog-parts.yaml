@@ -1,0 +1,123 @@
+databaseChangeLog:
+  - changeSet:
+      id: 14062022-add-parts
+      author: maksim_maevsky
+      changes:
+        - createTable:
+            tableName: parts
+            columns:
+              - column:
+                  name: id
+                  type: UUID
+                  constraints:
+                    nullable: false
+                    unique: true
+                    primaryKey: true
+              - column:
+                  name: code
+                  type: VARCHAR(50)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: description
+                  type: VARCHAR(300)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: create_date
+                  type: TIMESTAMP
+                  constraints:
+                    nullable: false
+              - column:
+                  name: brand_id
+                  type: UUID
+                  constraints:
+                    nullable: false
+
+  - changeSet:
+      id: 14062022-add-file-info
+      author: maksim_maevsky
+      changes:
+        - createTable:
+            tableName: file_infos
+            columns:
+              - column:
+                  name: id
+                  type: UUID
+                  constraints:
+                    nullable: false
+                    unique: true
+                    primaryKey: true
+              - column:
+                  name: file_name
+                  type: VARCHAR(100)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: extension
+                  type: VARCHAR(10)
+                  constraints:
+                    nullable: false
+
+  - changeSet:
+      id: 14062022-add-mail-info
+      author: maksim_maevsky
+      changes:
+        - createTable:
+            tableName: mail_infos
+            columns:
+              - column:
+                  name: id
+                  type: UUID
+                  constraints:
+                    nullable: false
+                    unique: true
+                    primaryKey: true
+              - column:
+                  name: subject
+                  type: VARCHAR(250)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: from
+                  type: VARCHAR(200)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: date
+                  type: TIMESTAMP
+                  constraints:
+                    nullable: false
+
+
+
+#  - changeSet:
+#      id: 14062022-add-brands
+#      author: maksim_maevsky
+#      changes:
+#        - createTable:
+#            tableName: brands
+#            columns:
+#              - column:
+#                  name: id
+#                  type: UUID
+#                  constraints:
+#                    nullable: false
+#                    unique: true
+#                    primaryKey: true
+#              - column:
+#                  name: name
+#                  type: VARCHAR(200)
+#                  constraints:
+#                    nullable: false
+#
+#  - changeSet:
+#      id:  25122021-add-ForeignKeyConstraint-brands-to-parts
+#      author:  maksim_maevsky
+#      changes:
+#        - addForeignKeyConstraint:
+#            baseColumnNames: brand_id
+#            baseTableName: parts
+#            constraintName: fk_brands_parts
+#            referencedColumnNames: id
+#            referencedTableName: brands
