@@ -1,7 +1,7 @@
 package com.corphelper.mailparser.exeption_handler;
 
 
-import com.corphelper.mailparser.exeption_handler.exception.WrongPartStorageKeyException;
+import com.corphelper.mailparser.exeption_handler.exception.*;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -12,6 +12,38 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 @ControllerAdvice
 @Slf4j
 public class GlobalExceptionHandler {
+
+    @ExceptionHandler(WriteByteArrayToFileExeption.class)
+    public ResponseEntity<IncorrectData> handleException(WriteByteArrayToFileExeption exception) {
+
+        IncorrectData incorrectData = incorrectDataFilling(exception);
+
+        return new ResponseEntity<>(incorrectData, HttpStatus.BAD_REQUEST);
+    }
+
+    @ExceptionHandler(WorkBookCreationIOException.class)
+    public ResponseEntity<IncorrectData> handleException(WorkBookCreationIOException exception) {
+
+        IncorrectData incorrectData = incorrectDataFilling(exception);
+
+        return new ResponseEntity<>(incorrectData, HttpStatus.NOT_FOUND);
+    }
+
+    @ExceptionHandler(DeleteFileException.class)
+    public ResponseEntity<IncorrectData> handleException(DeleteFileException exception) {
+
+        IncorrectData incorrectData = incorrectDataFilling(exception);
+
+        return new ResponseEntity<>(incorrectData, HttpStatus.NOT_FOUND);
+    }
+
+    @ExceptionHandler(EmptyFileNotFoundException.class)
+    public ResponseEntity<IncorrectData> handleException(EmptyFileNotFoundException exception) {
+
+        IncorrectData incorrectData = incorrectDataFilling(exception);
+
+        return new ResponseEntity<>(incorrectData, HttpStatus.NOT_FOUND);
+    }
 
     @ExceptionHandler(WrongPartStorageKeyException.class)
     public ResponseEntity<IncorrectData> handleException(WrongPartStorageKeyException exception) {

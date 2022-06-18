@@ -5,20 +5,24 @@ import com.corphelper.mailparser.dto.MailInfoDto;
 import com.corphelper.mailparser.entity.MailInfo;
 import com.corphelper.mailparser.entity.Part;
 import com.corphelper.mailparser.entity.PartStorage;
+import com.corphelper.mailparser.exeption_handler.exception.EmptyFileNotFoundException;
+import com.corphelper.mailparser.exeption_handler.exception.WorkBookCreationIOException;
+import com.corphelper.mailparser.exeption_handler.exception.WriteByteArrayToFileExeption;
 import com.corphelper.mailparser.exeption_handler.exception.WrongPartStorageKeyException;
 import com.corphelper.mailparser.mapper.MailInfoMapper;
 import com.corphelper.mailparser.repository.PartRepository;
 import com.corphelper.mailparser.service.MailParserService;
 import lombok.Data;
 import lombok.RequiredArgsConstructor;
-import lombok.SneakyThrows;
 import org.apache.commons.io.FileUtils;
 import org.apache.poi.ss.usermodel.*;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -39,7 +43,7 @@ public class MailParserServiceImpl implements MailParserService {
     private String filePath;
 
 
-    @SneakyThrows
+    @Transactional
     @Override
     public void pars(List<MailInfoDto> mailInfoDtoList) {
 
@@ -48,26 +52,50 @@ public class MailParserServiceImpl implements MailParserService {
 
     }
 
-    private void parsMailInfos(List<MailInfo> mailInfoList) throws IOException {
+    private void parsMailInfos(List<MailInfo> mailInfoList) {
 
         for (MailInfo mailInfo : mailInfoList) {
 
             File file = getFile(mailInfo);
             List<Part> parts = new ArrayList<>();
-
-            try (FileInputStream fileStream = new FileInputStream(file);
-                 Workbook workbook = WorkbookFactory.create(fileStream)) {
-
-                iterateAllRows(parts, workbook);
-
-            } finally {
-
-                FileUtils.forceDelete(file);
-
-            }
-
+            parsAllFileRows(file, parts);
             setPartStorage(mailInfo, parts);
             partRepository.saveAll(parts);
+
+        }
+    }
+
+    private void parsAllFileRows(File file, List<Part> parts) {
+
+        try (FileInputStream fileStream = new FileInputStream(file);
+             Workbook workbook = WorkbookFactory.create(fileStream)) {
+
+            iterateAllRows(parts, workbook);
+
+        } catch (FileNotFoundException e) {
+
+            throw new EmptyFileNotFoundException("Wrong file path.");
+
+        } catch (IOException exception) {
+
+            throw new WorkBookCreationIOException("Exception when Work Book creating.");
+
+        } finally {
+
+            tryDeleteFile(file);
+
+        }
+    }
+
+    private void tryDeleteFile(File file) {
+
+        try {
+
+            FileUtils.forceDelete(file);
+
+        } catch (IOException exception) {
+
+            exception.printStackTrace();
 
         }
     }
@@ -138,13 +166,21 @@ public class MailParserServiceImpl implements MailParserService {
         }
     }
 
-    private File getFile(MailInfo mailInfo) throws IOException {
+    private File getFile(MailInfo mailInfo) {
 
-        String fileName = getFileName(mailInfo);
-        File file = new File(filePath + fileName);
-        FileUtils.writeByteArrayToFile(file, mailInfo.getFileInfo().getFileBytes());
+        try {
 
-        return file;
+            String fileName = getFileName(mailInfo);
+            File file = new File(filePath + fileName);
+            FileUtils.writeByteArrayToFile(file, mailInfo.getFileInfo().getFileBytes());
+
+            return file;
+
+        } catch (IOException exception) {
+
+            throw new WriteByteArrayToFileExeption("Exception while writing byte array to file.");
+
+        }
     }
 
     private String getFileName(MailInfo mailInfo) {
