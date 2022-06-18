@@ -20,7 +20,6 @@ import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.Optional;
 
 @Service
 @Data
@@ -71,8 +70,8 @@ public class MailCheckerServiceImpl implements MailCheckerService {
             MailInfo mailInfo = new MailInfo();
             mailInfo.setSubject(message.getSubject());
             getFromLAndSetToMailInfo(message, mailInfo);
-            Optional<FileInfo> optionalFileInfo = iterateMimeBodyParts(multipart);
-            optionalFileInfo.ifPresent(mailInfo::setFileInfo);
+            List<FileInfo> fileInfoList = iterateMimeBodyParts(multipart);
+            mailInfo.setFileInfoList(fileInfoList);
             mailInfos.add(mailInfo);
 
         }
@@ -88,9 +87,10 @@ public class MailCheckerServiceImpl implements MailCheckerService {
 
     }
 
-    private Optional<FileInfo> iterateMimeBodyParts(Multipart multipart) throws MessagingException, IOException {
+    private List<FileInfo> iterateMimeBodyParts(Multipart multipart) throws MessagingException, IOException {
 
         int countOfBodyParts = multipart.getCount();
+        List<FileInfo> fileInfoList = new ArrayList<>();
 
         for (int partCount = 0; partCount < countOfBodyParts; partCount++) {
 
@@ -100,12 +100,12 @@ public class MailCheckerServiceImpl implements MailCheckerService {
 
                 System.out.println("Try to save file");
                 FileInfo fileInfo = getFileInfo(part);
+                fileInfoList.add(fileInfo);
 
-                return Optional.of(fileInfo);
             }
         }
 
-        return Optional.empty();
+        return fileInfoList;
     }
 
     private FileInfo getFileInfo(MimeBodyPart part) throws IOException, MessagingException {

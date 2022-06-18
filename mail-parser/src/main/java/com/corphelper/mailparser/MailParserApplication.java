@@ -11,5 +11,4 @@ public class MailParserApplication {
     public static void main(String[] args) {
         SpringApplication.run(MailParserApplication.class, args);
     }
-
 }

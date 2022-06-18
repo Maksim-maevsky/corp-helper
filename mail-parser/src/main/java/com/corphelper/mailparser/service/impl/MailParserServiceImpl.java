@@ -2,6 +2,7 @@ package com.corphelper.mailparser.service.impl;
 
 import com.corphelper.mailparser.constant.PartStorageConstant;
 import com.corphelper.mailparser.dto.MailInfoDto;
+import com.corphelper.mailparser.entity.FileInfo;
 import com.corphelper.mailparser.entity.MailInfo;
 import com.corphelper.mailparser.entity.Part;
 import com.corphelper.mailparser.entity.PartStorage;
@@ -10,6 +11,7 @@ import com.corphelper.mailparser.exeption_handler.exception.WorkBookCreationIOEx
 import com.corphelper.mailparser.exeption_handler.exception.WriteByteArrayToFileExeption;
 import com.corphelper.mailparser.exeption_handler.exception.WrongPartStorageKeyException;
 import com.corphelper.mailparser.mapper.MailInfoMapper;
+import com.corphelper.mailparser.repository.MailInfoRepository;
 import com.corphelper.mailparser.repository.PartRepository;
 import com.corphelper.mailparser.service.MailParserService;
 import lombok.Data;
@@ -39,6 +41,8 @@ public class MailParserServiceImpl implements MailParserService {
 
     private final PartRepository partRepository;
 
+    private final MailInfoRepository mailInfoRepository;
+
     @Value("${file.path}")
     private String filePath;
 
@@ -49,6 +53,8 @@ public class MailParserServiceImpl implements MailParserService {
 
         List<MailInfo> mailInfoList = mailInfoMapper.mapToMailInfoList(mailInfoDtoList);
         parsMailInfos(mailInfoList);
+        mailInfoList.forEach(x -> x.setDateTime(LocalDateTime.now()));
+        mailInfoRepository.saveAll(mailInfoList);
 
     }
 
@@ -56,12 +62,17 @@ public class MailParserServiceImpl implements MailParserService {
 
         for (MailInfo mailInfo : mailInfoList) {
 
-            File file = getFile(mailInfo);
-            List<Part> parts = new ArrayList<>();
-            parsAllFileRows(file, parts);
-            setPartStorage(mailInfo, parts);
-            partRepository.saveAll(parts);
+            for (FileInfo fileInfo : mailInfo.getFileInfoList()) {
 
+                File file = getFile(fileInfo);
+                List<Part> parts = new ArrayList<>();
+                parsAllFileRows(file, parts);
+                String storageKey = fileInfo.getFileName();
+                setPartStorage(storageKey, parts);
+                partRepository.saveAll(parts);
+                fileInfo.setMailInfo(mailInfo);
+
+            }
         }
     }
 
@@ -117,9 +128,9 @@ public class MailParserServiceImpl implements MailParserService {
         }
     }
 
-    private void setPartStorage(MailInfo mailInfo, List<Part> parts) {
+    private void setPartStorage(String storageKey, List<Part> parts) {
 
-        String storageKey = mailInfo.getFileInfo().getFileName();
+
         PartStorage partStorage = Optional.of(PartStorageConstant.PART_STORAGE_MAP.get(storageKey))
                 .orElseThrow(() -> new WrongPartStorageKeyException("Wrong part storage key " + storageKey));
         parts.forEach(x -> x.setPartStorage(partStorage));
@@ -166,13 +177,13 @@ public class MailParserServiceImpl implements MailParserService {
         }
     }
 
-    private File getFile(MailInfo mailInfo) {
+    private File getFile(FileInfo fileInfo) {
 
         try {
 
-            String fileName = getFileName(mailInfo);
+            String fileName = getFileName(fileInfo);
             File file = new File(filePath + fileName);
-            FileUtils.writeByteArrayToFile(file, mailInfo.getFileInfo().getFileBytes());
+            FileUtils.writeByteArrayToFile(file, fileInfo.getFileBytes());
 
             return file;
 
@@ -183,9 +194,9 @@ public class MailParserServiceImpl implements MailParserService {
         }
     }
 
-    private String getFileName(MailInfo mailInfo) {
+    private String getFileName(FileInfo fileInfo) {
 
-        return mailInfo.getFileInfo().getFileName() + "." + mailInfo.getFileInfo().getExtension();
+        return fileInfo.getFileName() + "." + fileInfo.getExtension();
     }
 }
 

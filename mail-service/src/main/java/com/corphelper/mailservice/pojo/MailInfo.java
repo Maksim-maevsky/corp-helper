@@ -5,6 +5,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
+import java.util.*;
 
 @Data
 @NoArgsConstructor
@@ -15,7 +16,7 @@ public class MailInfo {
 
     private String from;
 
-    private FileInfo fileInfo;
+    private List<FileInfo> fileInfoList;
 
     private LocalDateTime dateTime;
 

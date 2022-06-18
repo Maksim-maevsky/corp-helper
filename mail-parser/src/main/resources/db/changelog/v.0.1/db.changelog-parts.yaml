@@ -68,6 +68,11 @@ databaseChangeLog:
                   type: VARCHAR(10)
                   constraints:
                     nullable: false
+              - column:
+                  name: mail_id
+                  type: UUID
+                  constraints:
+                    nullable: false
 
   - changeSet:
       id: 14062022-add-mail-info
@@ -89,8 +94,8 @@ databaseChangeLog:
                   constraints:
                     nullable: false
               - column:
-                  name: from
-                  type: VARCHAR(200)
+                  name: from_full_name
+                  type: VARCHAR(300)
                   constraints:
                     nullable: false
               - column:
@@ -129,6 +134,17 @@ databaseChangeLog:
             constraintName: fk_part_storages_parts
             referencedColumnNames: id
             referencedTableName: part_storages
+
+  - changeSet:
+      id:  14062022-add-ForeignKeyConstraint-mail-id-to-file-info
+      author:  maksim_maevsky
+      changes:
+        - addForeignKeyConstraint:
+            baseColumnNames: mail_id
+            baseTableName: file_infos
+            constraintName: fk_file_mail
+            referencedColumnNames: id
+            referencedTableName: mail_infos
 
   - changeSet:
       id: 14062022-add-part-storage

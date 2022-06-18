@@ -4,13 +4,12 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.GenericGenerator;
-import org.springframework.data.annotation.Transient;
 
-import javax.persistence.Column;
-import javax.persistence.GeneratedValue;
-import javax.persistence.Id;
+import javax.persistence.*;
 import java.util.UUID;
 
+@Entity
+@Table(name = "file_infos")
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
@@ -33,5 +32,9 @@ public class FileInfo {
 
     @Transient
     private byte[] fileBytes;
+
+    @ManyToOne(fetch = FetchType.LAZY, cascade = {CascadeType.DETACH, CascadeType.MERGE, CascadeType.PERSIST})
+    @JoinColumn(name = "mail_id")
+    private MailInfo mailInfo;
 
 }

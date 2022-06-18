@@ -4,14 +4,14 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.GenericGenerator;
-import org.springframework.data.annotation.Transient;
 
-import javax.persistence.Column;
-import javax.persistence.GeneratedValue;
-import javax.persistence.Id;
+import javax.persistence.*;
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.UUID;
 
+@Entity
+@Table(name = "mail_infos")
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
@@ -29,11 +29,11 @@ public class MailInfo {
     @Column(name = "subject")
     private String subject;
 
-    @Column(name = "from")
+    @Column(name = "from_full_name")
     private String from;
 
-    @Transient
-    private FileInfo fileInfo;
+    @OneToMany(fetch = FetchType.LAZY, cascade = {CascadeType.DETACH, CascadeType.MERGE, CascadeType.PERSIST}, mappedBy="mailInfo")
+    private List<FileInfo> fileInfoList;
 
     @Column(name = "date")
     private LocalDateTime dateTime;

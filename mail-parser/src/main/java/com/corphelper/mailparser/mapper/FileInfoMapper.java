@@ -23,5 +23,4 @@ public interface FileInfoMapper {
     @IterableMapping(qualifiedByName = "fileInfo")
     List<FileInfo> mapToFileInfoList(List<FileInfoDto> fileInfoDtoList);
 
-
 }
