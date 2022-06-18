@@ -1,8 +1,13 @@
 package com.corphelper.mailparser.service.impl;
 
+import com.corphelper.mailparser.constant.PartStorageConstant;
 import com.corphelper.mailparser.dto.MailInfoDto;
 import com.corphelper.mailparser.entity.MailInfo;
+import com.corphelper.mailparser.entity.Part;
+import com.corphelper.mailparser.entity.PartStorage;
+import com.corphelper.mailparser.exeption_handler.exception.WrongPartStorageKeyException;
 import com.corphelper.mailparser.mapper.MailInfoMapper;
+import com.corphelper.mailparser.repository.PartRepository;
 import com.corphelper.mailparser.service.MailParserService;
 import lombok.Data;
 import lombok.RequiredArgsConstructor;
@@ -15,88 +20,127 @@ import org.springframework.stereotype.Service;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
-import java.util.Iterator;
+import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
-@Service
+
 @Data
 @RequiredArgsConstructor
+@Service
 public class MailParserServiceImpl implements MailParserService {
 
     private final MailInfoMapper mailInfoMapper;
 
+    private final PartRepository partRepository;
+
     @Value("${file.path}")
     private String filePath;
+
 
     @SneakyThrows
     @Override
     public void pars(List<MailInfoDto> mailInfoDtoList) {
 
         List<MailInfo> mailInfoList = mailInfoMapper.mapToMailInfoList(mailInfoDtoList);
+        parsMailInfos(mailInfoList);
+
+    }
+
+    private void parsMailInfos(List<MailInfo> mailInfoList) throws IOException {
 
         for (MailInfo mailInfo : mailInfoList) {
 
-            String fileName = getFileName(mailInfo);
-            File file = getFile(mailInfo, fileName);
+            File file = getFile(mailInfo);
+            List<Part> parts = new ArrayList<>();
 
             try (FileInputStream fileStream = new FileInputStream(file);
                  Workbook workbook = WorkbookFactory.create(fileStream)) {
 
-                Sheet firstSheet = workbook.getSheetAt(0);
-                Iterator<Row> iterator = firstSheet.iterator();
-
-                while (iterator.hasNext()) {
-
-                    Row nextRow = iterator.next();
-                    iterateRow(nextRow);
-
-                }
+                iterateAllRows(parts, workbook);
 
             } finally {
 
                 FileUtils.forceDelete(file);
 
             }
+
+            setPartStorage(mailInfo, parts);
+            partRepository.saveAll(parts);
+
         }
     }
 
-    private void iterateRow(Row nextRow) {
+    private void iterateAllRows(List<Part> parts, Workbook workbook) {
 
-        for (int i = 0; i <= 4; i++) {
+        Sheet firstSheet = workbook.getSheetAt(0);
+
+        for (int currentRow = 0; currentRow < firstSheet.getLastRowNum(); currentRow++) {
+
+            if (currentRow == 0) {
+                continue;
+            }
+
+            Row nextRow = firstSheet.getRow(currentRow);
+            Part part = iterateOneRowAndGetPart(nextRow);
+            parts.add(part);
+
+        }
+    }
+
+    private void setPartStorage(MailInfo mailInfo, List<Part> parts) {
+
+        String storageKey = mailInfo.getFileInfo().getFileName();
+        PartStorage partStorage = Optional.of(PartStorageConstant.PART_STORAGE_MAP.get(storageKey))
+                .orElseThrow(() -> new WrongPartStorageKeyException("Wrong part storage key " + storageKey));
+        parts.forEach(x -> x.setPartStorage(partStorage));
+
+    }
+
+    private Part iterateOneRowAndGetPart(Row nextRow) {
+
+        Part part = new Part();
+
+        for (short i = 0; i <= 4; i++) {
 
             Cell cell = nextRow.getCell(i);
-            getCellType(cell);
+            getCellType(cell, part, i);
+            part.setCreateDate(LocalDateTime.now());
+        }
+
+        return part;
+    }
+
+    private void getCellType(Cell cell, Part part, short column) {
+
+        switch (column) {
+
+            case 0:
+                part.setCode(cell.getStringCellValue());
+                break;
+
+            case 1:
+                part.setBrand(cell.getStringCellValue());
+                break;
+
+            case 2:
+                part.setDescription(cell.getStringCellValue());
+                break;
+
+            case 3:
+                break;
+
+            case 4:
+                part.setCount((int) cell.getNumericCellValue());
+                break;
 
         }
     }
 
-    private void getCellType(Cell cell) {
+    private File getFile(MailInfo mailInfo) throws IOException {
 
-        if (cell != null) {
-
-            switch (cell.getCellType()) {
-
-                case STRING:
-                    System.out.print(cell.getStringCellValue());
-                    break;
-
-                case BOOLEAN:
-                    System.out.print(cell.getBooleanCellValue());
-                    break;
-
-                case NUMERIC:
-                    System.out.print(cell.getNumericCellValue());
-                    break;
-
-            }
-        } else {
-
-            return;
-        }
-    }
-
-    private File getFile(MailInfo mailInfo, String fileName) throws IOException {
-
+        String fileName = getFileName(mailInfo);
         File file = new File(filePath + fileName);
         FileUtils.writeByteArrayToFile(file, mailInfo.getFileInfo().getFileBytes());
 
