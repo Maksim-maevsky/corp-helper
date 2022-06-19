@@ -12,7 +12,6 @@ import java.util.UUID;
 @AllArgsConstructor
 public class FileInfo {
 
-
     private UUID id;
 
     private String fileName;
@@ -21,6 +20,6 @@ public class FileInfo {
 
     private byte[] fileBytes;
 
-    private MailInfo mailInfo;
+    private UUID mailInfoId;
 
 }

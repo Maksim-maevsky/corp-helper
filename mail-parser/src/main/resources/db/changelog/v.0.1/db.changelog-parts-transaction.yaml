@@ -49,7 +49,7 @@ databaseChangeLog:
       changes:
         - addForeignKeyConstraint:
             baseColumnNames: part_storage_id
-            baseTableName: trasaction_parts
+            baseTableName: transaction_parts
             constraintName: fk_transaction_parts_storages_parts
             referencedColumnNames: id
             referencedTableName: part_storages

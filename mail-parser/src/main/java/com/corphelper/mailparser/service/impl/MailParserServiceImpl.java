@@ -11,8 +11,8 @@ import com.corphelper.mailparser.exeption_handler.exception.WorkBookCreationIOEx
 import com.corphelper.mailparser.exeption_handler.exception.WriteByteArrayToFileExeption;
 import com.corphelper.mailparser.exeption_handler.exception.WrongPartStorageKeyException;
 import com.corphelper.mailparser.mapper.MailInfoMapper;
-import com.corphelper.mailparser.repository.PartRepositoryImpl;
-import com.corphelper.mailparser.repository.TransactionPartRepositoryImpl;
+import com.corphelper.mailparser.repository.impl.PartRepositoryImpl;
+import com.corphelper.mailparser.repository.impl.TransactionPartRepositoryImpl;
 import com.corphelper.mailparser.service.MailParserService;
 import lombok.Data;
 import lombok.RequiredArgsConstructor;
@@ -81,10 +81,11 @@ public class MailParserServiceImpl implements MailParserService {
     }
 
     private void deletePreviousPartsAndSaveCurrent(List<Part> parts) {
+
         partRepository.delete(PartStorageConstant.MIKHNEVO_STORAGE_ID);
+        partRepository.saveAll(parts);
 
         parts.forEach(part -> {
-            partRepository.save(part);
             transactionPartRepository.save(part);
         });
     }

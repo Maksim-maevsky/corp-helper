@@ -24,6 +24,4 @@ public class PartRowMapper implements RowMapper<Part> {
 
         return part;
     }
-
-
 }
