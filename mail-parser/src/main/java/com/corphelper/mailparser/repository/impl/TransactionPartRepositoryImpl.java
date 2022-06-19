@@ -36,7 +36,7 @@ public class TransactionPartRepositoryImpl implements TransactionPartRepository 
     @Override
     public int[] saveAll(List<Part> parts) {
 
-        return this.jdbcTemplate.batchUpdate(PartQuery.SAVE_PART_QUERY, new BatchPreparedStatementSetter() {
+        return this.jdbcTemplate.batchUpdate(TransactionPartQuery.SAVE_TRANSACTION_PART_QUERY, new BatchPreparedStatementSetter() {
 
             public void setValues(PreparedStatement ps, int i) throws SQLException {
 

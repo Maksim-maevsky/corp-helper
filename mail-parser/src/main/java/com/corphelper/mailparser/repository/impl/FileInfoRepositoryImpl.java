@@ -1,12 +1,9 @@
 package com.corphelper.mailparser.repository.impl;
 
 import com.corphelper.mailparser.entity.FileInfo;
-import com.corphelper.mailparser.entity.Part;
 import com.corphelper.mailparser.repository.FileInfoRepository;
-import com.corphelper.mailparser.repository.PartRepository;
 import com.corphelper.mailparser.repository.mapper.prepared_statement.FileInfoPreparedStatementMapper;
-import com.corphelper.mailparser.repository.mapper.prepared_statement.PartPreparedStatementMapper;
-import com.corphelper.mailparser.repository.query.PartQuery;
+import com.corphelper.mailparser.repository.query.FileInfoQuery;
 import lombok.Data;
 import lombok.RequiredArgsConstructor;
 import org.springframework.jdbc.core.BatchPreparedStatementSetter;
@@ -28,9 +25,20 @@ public class FileInfoRepositoryImpl implements FileInfoRepository {
 
 
     @Override
+    public int save(FileInfo fileInfo) {
+
+        return jdbcTemplate.update(FileInfoQuery.SAVE_FAIL_INFO_QUERY,
+                fileInfo.getId(),
+                fileInfo.getFileName(),
+                fileInfo.getExtension(),
+                fileInfo.getMailInfoId());
+    }
+
+
+    @Override
     public int[] saveAll(List<FileInfo> fileInfoList) {
 
-        return this.jdbcTemplate.batchUpdate(PartQuery.SAVE_PART_QUERY, new BatchPreparedStatementSetter() {
+        return this.jdbcTemplate.batchUpdate(FileInfoQuery.SAVE_FAIL_INFO_QUERY, new BatchPreparedStatementSetter() {
 
             public void setValues(PreparedStatement ps, int i) throws SQLException {
 
