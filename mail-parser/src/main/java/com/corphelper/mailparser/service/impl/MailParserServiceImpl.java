@@ -73,14 +73,14 @@ public class MailParserServiceImpl implements MailParserService {
                 String storageKey = fileInfo.getFileName();
                 setPartStorageAndId(storageKey, parts);
 
-                deletePraviousPartsAndSavaCurrent(parts);
+                deletePreviousPartsAndSaveCurrent(parts);
                 fileInfo.setMailInfo(mailInfo);
 
             }
         }
     }
 
-    private void deletePraviousPartsAndSavaCurrent(List<Part> parts) {
+    private void deletePreviousPartsAndSaveCurrent(List<Part> parts) {
         partRepository.delete(PartStorageConstant.MIKHNEVO_STORAGE_ID);
 
         parts.forEach(part -> {
