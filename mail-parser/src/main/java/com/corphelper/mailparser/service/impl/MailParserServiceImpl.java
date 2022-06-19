@@ -8,15 +8,16 @@ import com.corphelper.mailparser.entity.Part;
 import com.corphelper.mailparser.entity.PartStorage;
 import com.corphelper.mailparser.exeption_handler.exception.EmptyFileNotFoundException;
 import com.corphelper.mailparser.exeption_handler.exception.WorkBookCreationIOException;
-import com.corphelper.mailparser.exeption_handler.exception.WriteByteArrayToFileExeption;
 import com.corphelper.mailparser.exeption_handler.exception.WrongPartStorageKeyException;
 import com.corphelper.mailparser.mapper.MailInfoMapper;
-import com.corphelper.mailparser.repository.impl.PartRepositoryImpl;
-import com.corphelper.mailparser.repository.impl.TransactionPartRepositoryImpl;
+import com.corphelper.mailparser.repository.FileInfoRepository;
+import com.corphelper.mailparser.repository.MailInfoRepository;
+import com.corphelper.mailparser.repository.PartRepository;
+import com.corphelper.mailparser.repository.TransactionPartRepository;
 import com.corphelper.mailparser.service.MailParserService;
+import com.corphelper.mailparser.util.FileUtil;
 import lombok.Data;
 import lombok.RequiredArgsConstructor;
-import org.apache.commons.io.FileUtils;
 import org.apache.poi.ss.usermodel.*;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -40,9 +41,14 @@ public class MailParserServiceImpl implements MailParserService {
 
     private final MailInfoMapper mailInfoMapper;
 
-    private final PartRepositoryImpl partRepository;
+    private final PartRepository partRepository;
 
-    private final TransactionPartRepositoryImpl transactionPartRepository;
+    private final TransactionPartRepository transactionPartRepository;
+
+    private final FileInfoRepository fileInfoRepository;
+
+    private final MailInfoRepository mailInfoRepository;
+
 
     @Value("${file.path}")
     private String filePath;
@@ -55,7 +61,7 @@ public class MailParserServiceImpl implements MailParserService {
         List<MailInfo> mailInfoList = mailInfoMapper.mapToMailInfoList(mailInfoDtoList);
         parsMailInfos(mailInfoList);
         mailInfoList.forEach(x -> x.setDateTime(LocalDateTime.now()));
-//        mailInfoRepository.saveAll(mailInfoList);
+        mailInfoRepository.saveAll(mailInfoList);
 
     }
 
@@ -67,27 +73,32 @@ public class MailParserServiceImpl implements MailParserService {
 
                 List<Part> parts = new ArrayList<>();
 
-                File file = getFile(fileInfo);
+                String fileName = getFileName(fileInfo);
+
+                File file = FileUtil.getFile(filePath, fileName, fileInfo.getFileBytes());
                 parsAllFileRows(file, parts);
 
                 String storageKey = fileInfo.getFileName();
                 setPartStorageAndId(storageKey, parts);
 
                 deletePreviousPartsAndSaveCurrent(parts);
-                fileInfo.setMailInfo(mailInfo);
+                fileInfo.setMailInfoId(mailInfo.getId());
 
             }
         }
+    }
+
+    private String getFileName(FileInfo fileInfo) {
+
+        return fileInfo.getFileName() + "." + fileInfo.getExtension();
     }
 
     private void deletePreviousPartsAndSaveCurrent(List<Part> parts) {
 
         partRepository.delete(PartStorageConstant.MIKHNEVO_STORAGE_ID);
         partRepository.saveAll(parts);
+        transactionPartRepository.saveAll(parts);
 
-        parts.forEach(part -> {
-            transactionPartRepository.save(part);
-        });
     }
 
     private void parsAllFileRows(File file, List<Part> parts) {
@@ -107,23 +118,11 @@ public class MailParserServiceImpl implements MailParserService {
 
         } finally {
 
-            tryDeleteFile(file);
+            FileUtil.tryDeleteFile(file);
 
         }
     }
 
-    private void tryDeleteFile(File file) {
-
-        try {
-
-            FileUtils.forceDelete(file);
-
-        } catch (IOException exception) {
-
-            exception.printStackTrace();
-
-        }
-    }
 
     private void iterateAllRows(List<Part> parts, Workbook workbook) {
 
@@ -192,28 +191,6 @@ public class MailParserServiceImpl implements MailParserService {
                 break;
 
         }
-    }
-
-    private File getFile(FileInfo fileInfo) {
-
-        try {
-
-            String fileName = getFileName(fileInfo);
-            File file = new File(filePath + fileName);
-            FileUtils.writeByteArrayToFile(file, fileInfo.getFileBytes());
-
-            return file;
-
-        } catch (IOException exception) {
-
-            throw new WriteByteArrayToFileExeption("Exception while writing byte array to file.");
-
-        }
-    }
-
-    private String getFileName(FileInfo fileInfo) {
-
-        return fileInfo.getFileName() + "." + fileInfo.getExtension();
     }
 }
 
