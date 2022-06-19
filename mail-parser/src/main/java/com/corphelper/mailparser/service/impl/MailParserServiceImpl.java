@@ -11,8 +11,8 @@ import com.corphelper.mailparser.exeption_handler.exception.WorkBookCreationIOEx
 import com.corphelper.mailparser.exeption_handler.exception.WriteByteArrayToFileExeption;
 import com.corphelper.mailparser.exeption_handler.exception.WrongPartStorageKeyException;
 import com.corphelper.mailparser.mapper.MailInfoMapper;
-import com.corphelper.mailparser.repository.MailInfoRepository;
-import com.corphelper.mailparser.repository.PartRepository;
+import com.corphelper.mailparser.repository.PartRepositoryImpl;
+import com.corphelper.mailparser.repository.TransactionPartRepositoryImpl;
 import com.corphelper.mailparser.service.MailParserService;
 import lombok.Data;
 import lombok.RequiredArgsConstructor;
@@ -30,6 +30,7 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 
 
 @Data
@@ -39,9 +40,9 @@ public class MailParserServiceImpl implements MailParserService {
 
     private final MailInfoMapper mailInfoMapper;
 
-    private final PartRepository partRepository;
+    private final PartRepositoryImpl partRepository;
 
-    private final MailInfoRepository mailInfoRepository;
+    private final TransactionPartRepositoryImpl transactionPartRepository;
 
     @Value("${file.path}")
     private String filePath;
@@ -54,7 +55,7 @@ public class MailParserServiceImpl implements MailParserService {
         List<MailInfo> mailInfoList = mailInfoMapper.mapToMailInfoList(mailInfoDtoList);
         parsMailInfos(mailInfoList);
         mailInfoList.forEach(x -> x.setDateTime(LocalDateTime.now()));
-        mailInfoRepository.saveAll(mailInfoList);
+//        mailInfoRepository.saveAll(mailInfoList);
 
     }
 
@@ -64,16 +65,28 @@ public class MailParserServiceImpl implements MailParserService {
 
             for (FileInfo fileInfo : mailInfo.getFileInfoList()) {
 
-                File file = getFile(fileInfo);
                 List<Part> parts = new ArrayList<>();
+
+                File file = getFile(fileInfo);
                 parsAllFileRows(file, parts);
+
                 String storageKey = fileInfo.getFileName();
-                setPartStorage(storageKey, parts);
-                partRepository.saveAll(parts);
+                setPartStorageAndId(storageKey, parts);
+
+                deletePraviousPartsAndSavaCurrent(parts);
                 fileInfo.setMailInfo(mailInfo);
 
             }
         }
+    }
+
+    private void deletePraviousPartsAndSavaCurrent(List<Part> parts) {
+        partRepository.delete(PartStorageConstant.MIKHNEVO_STORAGE_ID);
+
+        parts.forEach(part -> {
+            partRepository.save(part);
+            transactionPartRepository.save(part);
+        });
     }
 
     private void parsAllFileRows(File file, List<Part> parts) {
@@ -128,12 +141,15 @@ public class MailParserServiceImpl implements MailParserService {
         }
     }
 
-    private void setPartStorage(String storageKey, List<Part> parts) {
-
+    private void setPartStorageAndId(String storageKey, List<Part> parts) {
 
         PartStorage partStorage = Optional.of(PartStorageConstant.PART_STORAGE_MAP.get(storageKey))
                 .orElseThrow(() -> new WrongPartStorageKeyException("Wrong part storage key " + storageKey));
-        parts.forEach(x -> x.setPartStorage(partStorage));
+
+        parts.forEach(x -> {
+            x.setPartStorageId(partStorage.getId());
+            x.setId(UUID.randomUUID());
+        });
 
     }
 

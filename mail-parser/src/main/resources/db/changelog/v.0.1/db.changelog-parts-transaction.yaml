@@ -4,7 +4,7 @@ databaseChangeLog:
       author: maksim_maevsky
       changes:
         - createTable:
-            tableName: trasaction_parts
+            tableName: transaction_parts
             columns:
               - column:
                   name: id

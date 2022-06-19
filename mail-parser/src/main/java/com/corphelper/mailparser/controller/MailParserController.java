@@ -2,10 +2,12 @@ package com.corphelper.mailparser.controller;
 
 import com.corphelper.mailparser.dto.MailInfoDto;
 import com.corphelper.mailparser.service.MailParserService;
-import com.google.inject.internal.cglib.proxy.$CallbackFilter;
 import lombok.Data;
 import lombok.RequiredArgsConstructor;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
 
@@ -16,6 +18,7 @@ import java.util.List;
 public class MailParserController {
 
     private final MailParserService mailParserService;
+
 
     @PostMapping
     public void pars(@RequestBody List<MailInfoDto> mailInfos) {
