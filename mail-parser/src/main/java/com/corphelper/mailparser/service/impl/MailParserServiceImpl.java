@@ -3,6 +3,7 @@ package com.corphelper.mailparser.service.impl;
 import com.corphelper.mailparser.constant.ParserConstant;
 import com.corphelper.mailparser.constant.PartStorageConstant;
 import com.corphelper.mailparser.dto.MailInfoDto;
+import com.corphelper.mailparser.dto.RefillResponseDto;
 import com.corphelper.mailparser.entity.FileInfo;
 import com.corphelper.mailparser.entity.MailInfo;
 import com.corphelper.mailparser.entity.Part;
@@ -19,6 +20,7 @@ import com.corphelper.mailparser.service.MailParserService;
 import com.corphelper.mailparser.util.FileUtil;
 import lombok.Data;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.poi.ss.usermodel.*;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -35,9 +37,11 @@ import java.util.Optional;
 import java.util.UUID;
 
 
-@Data
-@RequiredArgsConstructor
+
 @Service
+@Data
+@Slf4j
+@RequiredArgsConstructor
 public class MailParserServiceImpl implements MailParserService {
 
     private final MailInfoMapper mailInfoMapper;
@@ -58,9 +62,14 @@ public class MailParserServiceImpl implements MailParserService {
     @Override
     public void pars(List<MailInfoDto> mailInfoDtoList) {
 
+        log.info("Map mailInfoDtoList to mailInfoList");
+
         List<MailInfo> mailInfoList = mailInfoMapper.mapToMailInfoList(mailInfoDtoList);
         mailInfoService.setLocalDateTimeAndId(mailInfoList);
+
+        log.info("Try to save mailInfoList");
         mailInfoService.saveAll(mailInfoList);
+
         parsMailInfos(mailInfoList);
 
     }
@@ -69,6 +78,7 @@ public class MailParserServiceImpl implements MailParserService {
 
         for (MailInfo mailInfo : mailInfoList) {
 
+            log.info("Try to parse fileInfoList");
             parsFileInfos(mailInfo);
 
         }
@@ -81,6 +91,7 @@ public class MailParserServiceImpl implements MailParserService {
             List<Part> parts = new ArrayList<>();
             String fileName = getFileName(fileInfo);
 
+            log.info("Try to get File from byte array");
             File file = FileUtil.getFile(filePath, fileName, fileInfo.getFileBytes());
             tryParsAllFileRows(file, parts);
 
@@ -116,6 +127,8 @@ public class MailParserServiceImpl implements MailParserService {
 
     private void tryParsAllFileRows(File file, List<Part> parts) {
 
+        log.info("Parse file rows.");
+
         try (FileInputStream fileStream = new FileInputStream(file);
              Workbook workbook = WorkbookFactory.create(fileStream)) {
 
@@ -135,7 +148,6 @@ public class MailParserServiceImpl implements MailParserService {
 
         }
     }
-
 
     private void iterateAllRows(List<Part> parts, Workbook workbook) {
 
@@ -157,6 +169,8 @@ public class MailParserServiceImpl implements MailParserService {
     private short setPartStorageIdAndId(String storageKey, List<Part> parts) {
 
         PartStorage partStorage = getPartStorage(storageKey);
+
+        log.info("Set part storage id to parts");
 
         parts.forEach(x -> {
             x.setPartStorageId(partStorage.getId());

@@ -6,6 +6,7 @@ import com.corphelper.mailparser.repository.MailInfoRepository;
 import com.corphelper.mailparser.service.MailInfoService;
 import lombok.Data;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
@@ -14,6 +15,7 @@ import java.util.UUID;
 
 @Service
 @Data
+@Slf4j
 @RequiredArgsConstructor
 public class MailInfoServiceImpl implements MailInfoService {
 
@@ -21,6 +23,8 @@ public class MailInfoServiceImpl implements MailInfoService {
 
     @Override
     public void setLocalDateTimeAndId(List<MailInfo> mailInfoList) {
+
+        log.info("Set date and Id to mailInfoList.");
 
         mailInfoList.forEach(x -> {
             x.setDateTime(LocalDateTime.now());
@@ -30,6 +34,8 @@ public class MailInfoServiceImpl implements MailInfoService {
 
 
     public void saveAll( List<MailInfo> mailInfoList){
+
+        log.info("Save mailInfoList.");
 
         mailInfoRepository.saveAll(mailInfoList);
 

@@ -9,8 +9,3 @@ spring:
       server:
         git:
           uri: https://github.com/Maksim-maevsky/config-service
-
-eureka:
-  client:
-    serviceUrl:
-      defaultZone: ${EUREKA_URI:http://localhost:8761/eureka}

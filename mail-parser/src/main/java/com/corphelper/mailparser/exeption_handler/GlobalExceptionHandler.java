@@ -21,6 +21,14 @@ public class GlobalExceptionHandler {
         return new ResponseEntity<>(incorrectData, HttpStatus.BAD_REQUEST);
     }
 
+    @ExceptionHandler(WrongPartStorageNameException.class)
+    public ResponseEntity<IncorrectData> handleException(WrongPartStorageNameException exception) {
+
+        IncorrectData incorrectData = incorrectDataFilling(exception);
+
+        return new ResponseEntity<>(incorrectData, HttpStatus.NOT_FOUND);
+    }
+
     @ExceptionHandler(WorkBookCreationIOException.class)
     public ResponseEntity<IncorrectData> handleException(WorkBookCreationIOException exception) {
 

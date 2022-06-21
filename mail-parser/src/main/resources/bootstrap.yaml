@@ -13,12 +13,5 @@ spring:
       init:
         mode: always
 
-eureka:
-  client:
-    serviceUrl:
-      defaultZone: ${EUREKA_URI:http://localhost:8761/eureka}
-
-management.endpoints.web.exposure.include: "*"
-
 file:
   path: "/corp-helper/mail-parser/file-store1/"
