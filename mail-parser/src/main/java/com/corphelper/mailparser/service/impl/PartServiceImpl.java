@@ -22,10 +22,13 @@ public class PartServiceImpl implements PartService {
 
     public RefillResponseDto getRefilledInfo(RefillRequestDto refillRequestDto) {
 
-//        List<Part> targetPartStorageList = partRepository.;
-//
-//        List<Part> currentPartStorageList = partRepository.;
+        List<Part> targetPartStorageList = partRepository.getAllByPartStorageName(refillRequestDto.getTargetPartStorageName());
+        List<Part> currentPartStorageList = partRepository.getAllByPartStorageName(refillRequestDto.getCurrentPartStorageName());
 
-return null;
+        return new RefillResponseDto(targetPartStorageList, currentPartStorageList);
+
+//        targetPartStorageList.forEach(System.out::println);
+//        currentPartStorageList.forEach(System.out::println);
+
     }
 }

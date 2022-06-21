@@ -12,4 +12,6 @@ public interface PartRepository {
 
     int[] saveAll(List<Part> parts);
 
+    List<Part> getAllByPartStorageName(String partStorageName);
+
 }

@@ -7,6 +7,7 @@ import com.corphelper.mailparser.repository.query.PartQuery;
 import lombok.Data;
 import lombok.RequiredArgsConstructor;
 import org.springframework.jdbc.core.BatchPreparedStatementSetter;
+import org.springframework.jdbc.core.BeanPropertyRowMapper;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
 
@@ -19,10 +20,10 @@ import java.util.List;
 @Repository
 public class PartRepositoryImpl implements PartRepository {
 
-
     private final JdbcTemplate jdbcTemplate;
 
     private final PartPreparedStatementMapper partPreparedStatementMapper;
+
 
     @Override
     public void delete(short storagePartId) {
@@ -56,5 +57,11 @@ public class PartRepositoryImpl implements PartRepository {
             }
 
         });
+    }
+
+    @Override
+    public List<Part> getAllByPartStorageName(String partStorageName) {
+
+        return  jdbcTemplate.query(PartQuery.GET_PARTS_BY_STORAGE_NAME, new BeanPropertyRowMapper(Part.class));
     }
 }
