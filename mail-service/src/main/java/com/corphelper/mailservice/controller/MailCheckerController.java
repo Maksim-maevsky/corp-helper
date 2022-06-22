@@ -1,13 +1,13 @@
 package com.corphelper.mailservice.controller;
 
+import com.corphelper.mailservice.MailNotificationPreparerFacade;
 import com.corphelper.mailservice.pojo.MailInfo;
+import com.corphelper.mailservice.pojo.RefillResultDto;
 import com.corphelper.mailservice.service.MailCheckerService;
+import com.corphelper.mailservice.service.MailPreparerService;
 import lombok.Data;
 import lombok.RequiredArgsConstructor;
-import lombok.SneakyThrows;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -21,12 +21,21 @@ public class MailCheckerController {
 
     private final MailParserClient mailParserClient;
 
-    @SneakyThrows
+    private final MailNotificationPreparerFacade mailNotificationPreparerFacade;
+
+
     @GetMapping("/check")
     public void checkNewMessages() {
 
         List<MailInfo> mailInfoList = mailCheckerService.checkMail();
         mailParserClient.parse(mailInfoList);
+
+    }
+
+    @PostMapping
+    public void sendRefilledInfo(@RequestBody RefillResultDto refillResultDto) {
+
+        mailNotificationPreparerFacade.sendRefilledInfo(refillResultDto);
 
     }
 }

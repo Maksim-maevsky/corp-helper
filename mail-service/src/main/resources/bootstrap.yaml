@@ -4,3 +4,13 @@ spring:
   cloud:
     config:
       uri: http://localhost:9888
+  mail:
+    host: smtp.yandex.ru
+    port: 587
+    username: mm@opox.ru
+    password: ioq9plmQ
+    protocol: smtp
+    properties.mail.smtp:
+      auth: true
+      starttls.enable: true
+      ssl.trust: smtp.yandex.ru

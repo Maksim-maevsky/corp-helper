@@ -8,4 +8,4 @@ spring:
     config:
       server:
         git:
-          uri: https://github.com/Maksim-maevsky/corp-helper/src/main/resources/
+          uri: https://github.com/Maksim-maevsky/config-service

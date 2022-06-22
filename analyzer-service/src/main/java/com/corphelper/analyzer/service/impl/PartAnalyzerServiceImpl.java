@@ -11,13 +11,13 @@ import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 
 
 @Service
 @Data
 @Slf4j
 public class PartAnalyzerServiceImpl implements PartAnalyzerService {
-
 
     @Override
     public RefillResultDto getRefillPartStorageInfo(RefillResponseDto refillResponseDto) {
@@ -29,16 +29,23 @@ public class PartAnalyzerServiceImpl implements PartAnalyzerService {
 
     private RefillResultDto getRefillResultDto(RefillResponseDto refillResponseDto, List<PartDto> resultPartDtoList) {
 
+        log.info("Get refillResultDto");
+
         RefillResultDto refillResultDto = new RefillResultDto();
 
+        Set<String> currentPartStorageNameSet = refillResponseDto.getCurrentPartStorageInfoDto().getPartStorageNameSet();
+        Set<String> targetPartStorageNameSet = refillResponseDto.getTargetPartStorageInfoDto().getPartStorageNameSet();
+
         refillResultDto.setResultPartDtoList(resultPartDtoList);
-        refillResultDto.setCurrentPartStorageName(refillResponseDto.getCurrentPartStorageInfoDto().getPartStorageName());
-        refillResultDto.setTargetPartStorageName(refillResponseDto.getTargetPartStorageInfoDto().getPartStorageName());
+        refillResultDto.setCurrentPartStorageName(currentPartStorageNameSet);
+        refillResultDto.setTargetPartStorageName(targetPartStorageNameSet);
 
         return refillResultDto;
     }
 
     private List<PartDto> getResultPartDtoList(RefillResponseDto refillResponseDto) {
+
+        log.info("try to compare target and current list and get result list.");
 
         List<PartDto> resultPartDtoList = new ArrayList<>();
 

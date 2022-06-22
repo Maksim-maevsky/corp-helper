@@ -10,6 +10,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Set;
 
 @RestController
 @RequestMapping("/mail-parser")
@@ -29,8 +30,12 @@ public class MailParserController {
 
     }
 
-    @GetMapping
-    public RefillResponseDto getRefillDto(RefillRequestDto refillRequestDto) {
+    @GetMapping("/refilling")
+    public RefillResponseDto getRefillDto(@RequestParam("target") Set<String> target, @RequestParam("current") Set<String> current) {
+
+        RefillRequestDto refillRequestDto = new RefillRequestDto();
+        refillRequestDto.setCurrentPartStorageNameSet(current);
+        refillRequestDto.setTargetPartStorageNameSet(target);
 
         return partService.getRefilledInfo(refillRequestDto);
     }

@@ -190,7 +190,7 @@ public class MailParserServiceImpl implements MailParserService {
 
         Part part = new Part();
 
-        for (short currentColumn = 0; currentColumn <= 4; currentColumn++) {
+        for (short currentColumn = 0; currentColumn <= 5; currentColumn++) {
 
             Cell cell = nextRow.getCell(currentColumn);
             getAndSetCellTypeToPart(cell, part, currentColumn);
@@ -218,9 +218,11 @@ public class MailParserServiceImpl implements MailParserService {
                 break;
 
             case 3:
-                break;
 
             case 4:
+                break;
+
+            case 5:
                 part.setCount((int) cell.getNumericCellValue());
                 break;
 

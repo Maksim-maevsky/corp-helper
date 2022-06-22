@@ -2,18 +2,21 @@ package com.corphelper.mailparser.repository.impl;
 
 import com.corphelper.mailparser.entity.Part;
 import com.corphelper.mailparser.repository.PartRepository;
+import com.corphelper.mailparser.repository.mapper.PartRowMapper;
 import com.corphelper.mailparser.repository.mapper.prepared_statement.PartPreparedStatementMapper;
 import com.corphelper.mailparser.repository.query.PartQuery;
 import lombok.Data;
 import lombok.RequiredArgsConstructor;
 import org.springframework.jdbc.core.BatchPreparedStatementSetter;
-import org.springframework.jdbc.core.BeanPropertyRowMapper;
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.stereotype.Repository;
 
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
+import java.util.Collections;
 import java.util.List;
+import java.util.Set;
 
 @Data
 @RequiredArgsConstructor
@@ -60,8 +63,11 @@ public class PartRepositoryImpl implements PartRepository {
     }
 
     @Override
-    public List<Part> getAllByPartStorageName(String partStorageName) {
+    public List<Part> getAllByPartStorageName(Set<String> partStorageNameSet) {
+        String inSql = String.join(",", Collections.nCopies(partStorageNameSet.size(), "?"));
 
-        return  jdbcTemplate.query(PartQuery.GET_PARTS_BY_STORAGE_NAME, new BeanPropertyRowMapper(Part.class));
+
+        return jdbcTemplate.query(String.format(PartQuery.GET_PARTS_BY_STORAGE_NAME, inSql), partStorageNameSet.toArray(), new PartRowMapper());
+
     }
 }

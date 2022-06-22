@@ -6,13 +6,14 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.util.List;
+import java.util.Set;
 
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
 public class PartStorageInfoDto {
 
-    private String partStorageName;
+    private Set<String> partStorageNameSet;
 
     private List<Part> partList;
 
