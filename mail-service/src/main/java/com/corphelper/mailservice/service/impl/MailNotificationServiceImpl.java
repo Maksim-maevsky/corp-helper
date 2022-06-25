@@ -25,12 +25,20 @@ public class MailNotificationServiceImpl implements MailNotificationService {
     @Override
     public void send(MailNotificationInfo mailNotificationInfo) {
 
+        log.info("Try to sen message.");
+
         MimeMessage mimeMessage = emailSender.createMimeMessage();
         trySetDataMimeMessage(mailNotificationInfo, mimeMessage);
+
         emailSender.send(mimeMessage);
+
+        log.info("Message was sent");
+
     }
 
     private void trySetDataMimeMessage(MailNotificationInfo notification, MimeMessage mimeMessage) {
+
+        log.info("Try to create mimeMessage.");
 
         MimeMessageHelper helper = new MimeMessageHelper(mimeMessage, "utf-8");
 
@@ -47,6 +55,4 @@ public class MailNotificationServiceImpl implements MailNotificationService {
 
         }
     }
-
-
 }

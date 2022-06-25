@@ -4,7 +4,6 @@ import com.corphelper.mailservice.MailNotificationPreparerFacade;
 import com.corphelper.mailservice.pojo.MailInfo;
 import com.corphelper.mailservice.pojo.RefillResultDto;
 import com.corphelper.mailservice.service.MailCheckerService;
-import com.corphelper.mailservice.service.MailPreparerService;
 import lombok.Data;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;

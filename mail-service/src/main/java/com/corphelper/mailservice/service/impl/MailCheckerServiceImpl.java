@@ -3,9 +3,11 @@ package com.corphelper.mailservice.service.impl;
 import com.corphelper.mailservice.pojo.FileInfo;
 import com.corphelper.mailservice.pojo.MailInfo;
 import com.corphelper.mailservice.service.MailCheckerService;
+import com.corphelper.mailservice.util.DecoderUtil;
 import lombok.Data;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.io.IOUtils;
 import org.springframework.beans.factory.annotation.Value;
@@ -23,10 +25,13 @@ import java.util.List;
 
 @Service
 @Data
+@Slf4j
 @RequiredArgsConstructor
 public class MailCheckerServiceImpl implements MailCheckerService {
 
     private final Folder folder;
+
+    private final DecoderUtil decoderUtil;
 
     @Value("${javax.mail.user}")
     private String user;
@@ -49,15 +54,25 @@ public class MailCheckerServiceImpl implements MailCheckerService {
         Flags seen = new Flags(Flags.Flag.SEEN);
         FlagTerm unseenFlagTerm = new FlagTerm(seen, false);
 
-        System.out.println("Try to get messages");
+        log.info("Try to get messages");
 
         Message messages[] = folder.search(unseenFlagTerm);
         List<Message> messageList = Arrays.asList(messages);
+        isMessages(messageList);
         List<MailInfo> mailInfos = findAndSendAttachment(messageList);
 
         folder.close();
         return mailInfos;
 
+    }
+
+    private void isMessages(List<Message> messageList) {
+
+        if(messageList.isEmpty()){
+
+            log.info("There weren't new messages.");
+
+        }
     }
 
     private List<MailInfo> findAndSendAttachment(List<Message> messageList) throws IOException, MessagingException {
@@ -92,33 +107,57 @@ public class MailCheckerServiceImpl implements MailCheckerService {
         int countOfBodyParts = multipart.getCount();
         List<FileInfo> fileInfoList = new ArrayList<>();
 
+        int countOfAttachments = 0;
+
         for (int partCount = 0; partCount < countOfBodyParts; partCount++) {
 
             MimeBodyPart part = (MimeBodyPart) multipart.getBodyPart(partCount);
 
             if (isAttachment(part)) {
 
-                System.out.println("Try to save file");
+                countOfAttachments++;
+
+                log.info("Try to save file");
+
                 FileInfo fileInfo = getFileInfo(part);
                 fileInfoList.add(fileInfo);
 
             }
         }
 
+        isAttachmentsToMessages(countOfAttachments);
+
         return fileInfoList;
+    }
+
+    private void isAttachmentsToMessages(int countOfAttachments) {
+
+        if(countOfAttachments == 0){
+
+            log.info("Messages were without attachments.");
+
+        }else{
+
+            log.info("All attachments were add to list");
+        }
     }
 
     private FileInfo getFileInfo(MimeBodyPart part) throws IOException, MessagingException {
 
-        String fileName = part.getFileName();
+        String fullEncodeFileName = part.getFileName();
+        String fullDecodeFileName = decoderUtil.getDecodedString(fullEncodeFileName);
+        String fileName = FilenameUtils.getBaseName(fullDecodeFileName);
+
         FileInfo fileInfo = new FileInfo();
-        fileInfo.setExtension(FilenameUtils.getExtension(fileName));
-        fileInfo.setFileName(FilenameUtils.getBaseName(fileName));
+        fileInfo.setExtension(FilenameUtils.getExtension(fullDecodeFileName));
+        fileInfo.setFileName(fileName);
+
         byte[] bytes = IOUtils.toByteArray(part.getInputStream());
         fileInfo.setFileBytes(bytes);
 
         return fileInfo;
     }
+
 
     private boolean isAttachment(MimeBodyPart part) throws MessagingException {
 

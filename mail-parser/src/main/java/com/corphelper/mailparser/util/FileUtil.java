@@ -22,7 +22,7 @@ public final class FileUtil {
 
         } catch (IOException exception) {
 
-            throw new WriteByteArrayToFileExeption("Exception while writing byte array to file.");
+            throw new WriteByteArrayToFileExeption("Exception while writing byte array to file " + fileName);
 
         }
     }
