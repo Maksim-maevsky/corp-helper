@@ -7,7 +7,6 @@ import lombok.NoArgsConstructor;
 import java.time.LocalDateTime;
 import java.util.UUID;
 
-
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
@@ -19,12 +18,8 @@ public class Part {
 
     private String description;
 
-    private LocalDateTime createDate;
-
     private String brand;
 
-    private int count;
-
-    private short partStorageId;
+    private LocalDateTime createDate;
 
 }

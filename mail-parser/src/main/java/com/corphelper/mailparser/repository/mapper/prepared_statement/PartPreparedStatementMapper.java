@@ -15,10 +15,8 @@ public class PartPreparedStatementMapper {
         ps.setObject(1, part.getId());
         ps.setString(2, part.getCode());
         ps.setString(3, part.getDescription());
-        ps.setTimestamp(4, Timestamp.valueOf(part.getCreateDate()));
-        ps.setString(5, part.getBrand());
-        ps.setInt(6, part.getCount());
-        ps.setShort(7, part.getPartStorageId());
+        ps.setString(4, part.getBrand());
+        ps.setTimestamp(5, Timestamp.valueOf(part.getCreateDate()));
 
     }
 }

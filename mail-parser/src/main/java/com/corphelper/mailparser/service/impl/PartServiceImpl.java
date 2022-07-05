@@ -4,9 +4,9 @@ import com.corphelper.mailparser.constant.PartStorageConstant;
 import com.corphelper.mailparser.dto.PartStorageInfoDto;
 import com.corphelper.mailparser.dto.RefillRequestDto;
 import com.corphelper.mailparser.dto.RefillResponseDto;
-import com.corphelper.mailparser.entity.Part;
+import com.corphelper.mailparser.entity.PartInfo;
 import com.corphelper.mailparser.exeption_handler.exception.WrongPartStorageNameException;
-import com.corphelper.mailparser.repository.PartRepository;
+import com.corphelper.mailparser.repository.PartInfoRepository;
 import com.corphelper.mailparser.service.PartService;
 import lombok.Data;
 import lombok.RequiredArgsConstructor;
@@ -23,7 +23,7 @@ import java.util.Set;
 @RequiredArgsConstructor
 public class PartServiceImpl implements PartService {
 
-    private final PartRepository partRepository;
+    private final PartInfoRepository partInfoRepository;
 
 
     public RefillResponseDto getRefilledInfo(RefillRequestDto refillRequestDto) {
@@ -33,16 +33,16 @@ public class PartServiceImpl implements PartService {
         refillRequestDto.getCurrentPartStorageNameSet().forEach(this::checkPartStorageName);
         refillRequestDto.getTargetPartStorageNameSet().forEach(this::checkPartStorageName);
 
-        List<Part> targetPartStorageList = partRepository.getAllByPartStorageName(refillRequestDto.getTargetPartStorageNameSet());
-        List<Part> currentPartStorageList = partRepository.getAllByPartStorageName(refillRequestDto.getCurrentPartStorageNameSet());
+        List<PartInfo> targetPartInfoStorageList = partInfoRepository.getAllByPartStorageName(refillRequestDto.getTargetPartStorageNameSet());
+        List<PartInfo> currentPartInfoStorageList = partInfoRepository.getAllByPartStorageName(refillRequestDto.getCurrentPartStorageNameSet());
 
-        PartStorageInfoDto targetPartStorageInfoDto = getPartStorageInfoDto(refillRequestDto.getTargetPartStorageNameSet(), targetPartStorageList);
-        PartStorageInfoDto currentPartStorageInfoDto = getPartStorageInfoDto(refillRequestDto.getCurrentPartStorageNameSet(), currentPartStorageList);
+        PartStorageInfoDto targetPartStorageInfoDto = getPartStorageInfoDto(refillRequestDto.getTargetPartStorageNameSet(), targetPartInfoStorageList);
+        PartStorageInfoDto currentPartStorageInfoDto = getPartStorageInfoDto(refillRequestDto.getCurrentPartStorageNameSet(), currentPartInfoStorageList);
 
         return new RefillResponseDto(targetPartStorageInfoDto, currentPartStorageInfoDto);
     }
 
-    private PartStorageInfoDto getPartStorageInfoDto(Set<String> partStorageName, List<Part> targetPartStorageList) {
+    private PartStorageInfoDto getPartStorageInfoDto(Set<String> partStorageName, List<PartInfo> targetPartStorageList) {
 
         PartStorageInfoDto partStorageInfoDto = new PartStorageInfoDto();
 

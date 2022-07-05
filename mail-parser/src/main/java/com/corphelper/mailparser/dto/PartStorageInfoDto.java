@@ -1,6 +1,6 @@
 package com.corphelper.mailparser.dto;
 
-import com.corphelper.mailparser.entity.Part;
+import com.corphelper.mailparser.entity.PartInfo;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -15,6 +15,6 @@ public class PartStorageInfoDto {
 
     private Set<String> partStorageNameSet;
 
-    private List<Part> partList;
+    private List<PartInfo> partList;
 
 }

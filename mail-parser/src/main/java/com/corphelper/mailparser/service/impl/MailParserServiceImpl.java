@@ -3,17 +3,13 @@ package com.corphelper.mailparser.service.impl;
 import com.corphelper.mailparser.constant.ParserConstant;
 import com.corphelper.mailparser.constant.PartStorageConstant;
 import com.corphelper.mailparser.dto.MailInfoDto;
-import com.corphelper.mailparser.dto.RefillResponseDto;
-import com.corphelper.mailparser.entity.FileInfo;
-import com.corphelper.mailparser.entity.MailInfo;
-import com.corphelper.mailparser.entity.Part;
-import com.corphelper.mailparser.entity.PartStorage;
+import com.corphelper.mailparser.entity.*;
 import com.corphelper.mailparser.exeption_handler.exception.EmptyFileNotFoundException;
 import com.corphelper.mailparser.exeption_handler.exception.WorkBookCreationIOException;
 import com.corphelper.mailparser.exeption_handler.exception.WrongPartStorageKeyException;
 import com.corphelper.mailparser.mapper.MailInfoMapper;
 import com.corphelper.mailparser.repository.FileInfoRepository;
-import com.corphelper.mailparser.repository.PartRepository;
+import com.corphelper.mailparser.repository.PartInfoRepository;
 import com.corphelper.mailparser.repository.TransactionPartRepository;
 import com.corphelper.mailparser.service.MailInfoService;
 import com.corphelper.mailparser.service.MailParserService;
@@ -46,7 +42,7 @@ public class MailParserServiceImpl implements MailParserService {
 
     private final MailInfoMapper mailInfoMapper;
 
-    private final PartRepository partRepository;
+    private final PartInfoRepository partInfoRepository;
 
     private final TransactionPartRepository transactionPartRepository;
 
@@ -88,7 +84,7 @@ public class MailParserServiceImpl implements MailParserService {
 
         for (FileInfo fileInfo : mailInfo.getFileInfoList()) {
 
-            List<Part> parts = new ArrayList<>();
+            List<PartInfo> parts = new ArrayList<>();
             String fileName = getFileName(fileInfo);
 
             log.info("Try to get File from byte array");
@@ -117,15 +113,15 @@ public class MailParserServiceImpl implements MailParserService {
         return fileInfo.getFileName() + "." + fileInfo.getExtension();
     }
 
-    private void deletePreviousPartsAndSaveCurrent(List<Part> parts, short partStorageId) {
+    private void deletePreviousPartsAndSaveCurrent(List<PartInfo> parts, short partStorageId) {
 
-        partRepository.delete(partStorageId);
-        partRepository.saveAll(parts);
+        partInfoRepository.delete(partStorageId);
+        partInfoRepository.saveAll(parts);
         transactionPartRepository.saveAll(parts);
 
     }
 
-    private void tryParsAllFileRows(File file, List<Part> parts) {
+    private void tryParsAllFileRows(File file, List<PartInfo> parts) {
 
         log.info("Parse file rows.");
 
@@ -149,7 +145,7 @@ public class MailParserServiceImpl implements MailParserService {
         }
     }
 
-    private void iterateAllRows(List<Part> parts, Workbook workbook) {
+    private void iterateAllRows(List<PartInfo> parts, Workbook workbook) {
 
         Sheet firstSheet = workbook.getSheetAt(ParserConstant.FIRST_SHEET);
 
@@ -160,13 +156,13 @@ public class MailParserServiceImpl implements MailParserService {
             }
 
             Row nextRow = firstSheet.getRow(currentRow);
-            Part part = iterateOneRowAndGetPart(nextRow);
+            PartInfo part = iterateOneRowAndGetPart(nextRow);
             parts.add(part);
 
         }
     }
 
-    private short setPartStorageIdAndId(String storageKey, List<Part> parts) {
+    private short setPartStorageIdAndId(String storageKey, List<PartInfo> parts) {
 
         PartStorage partStorage = getPartStorage(storageKey);
 
@@ -186,22 +182,23 @@ public class MailParserServiceImpl implements MailParserService {
                 .orElseThrow(() -> new WrongPartStorageKeyException("Wrong part storage key " + storageKey));
     }
 
-    private Part iterateOneRowAndGetPart(Row nextRow) {
+    private PartInfo iterateOneRowAndGetPart(Row nextRow) {
 
+        PartInfo partInfo = new PartInfo();
         Part part = new Part();
 
         for (short currentColumn = 0; currentColumn <= 5; currentColumn++) {
 
             Cell cell = nextRow.getCell(currentColumn);
-            getAndSetCellTypeToPart(cell, part, currentColumn);
-            part.setCreateDate(LocalDateTime.now());
+            getAndSetCellTypeToPart(cell, partInfo, part, currentColumn);
+            partInfo.setCreateDate(LocalDateTime.now());
 
         }
 
-        return part;
+        return partInfo;
     }
 
-    private void getAndSetCellTypeToPart(Cell cell, Part part, short column) {
+    private void getAndSetCellTypeToPart(Cell cell, PartInfo partInfo, Part part, short column) {
 
         switch (column) {
 
@@ -223,7 +220,7 @@ public class MailParserServiceImpl implements MailParserService {
                 break;
 
             case 5:
-                part.setCount((int) cell.getNumericCellValue());
+                partInfo.setCount((int) cell.getNumericCellValue());
                 break;
 
         }

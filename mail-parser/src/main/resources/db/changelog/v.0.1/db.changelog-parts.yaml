@@ -24,15 +24,30 @@ databaseChangeLog:
                   constraints:
                     nullable: false
               - column:
+                  name: brand_id
+                  type: BIGINT
+                  constraints:
+                    nullable: false
+              - column:
                   name: create_date
                   type: TIMESTAMP
                   constraints:
                     nullable: false
+
+
+  - changeSet:
+      id: 14062022-add-part-infos
+      author: maksim_maevsky
+      changes:
+        - createTable:
+            tableName: part_infos
+            columns:
               - column:
-                  name: brand
-                  type: VARCHAR(50)
+                  name: id
+                  type: UUID
                   constraints:
                     nullable: false
+                    unique: true
               - column:
                   name: count
                   type: BIGINT
@@ -40,7 +55,17 @@ databaseChangeLog:
                     nullable: false
               - column:
                   name: part_storage_id
-                  type: BIGINT
+                  type: SMALLINT
+                  constraints:
+                    nullable: false
+              - column:
+                  name: part_id
+                  type: UUID
+                  constraints:
+                    nullable: false
+              - column:
+                  name: create_date
+                  type: TIMESTAMP
                   constraints:
                     nullable: false
 
@@ -125,15 +150,57 @@ databaseChangeLog:
                     nullable: false
 
   - changeSet:
-      id:  14062022-add-ForeignKeyConstraint-part-storage-to-parts
+      id: 14062022-add-brands
+      author: maksim_maevsky
+      changes:
+        - createTable:
+            tableName: brands
+            columns:
+              - column:
+                  name: id
+                  type: BIGINT
+                  constraints:
+                    nullable: false
+                    unique: true
+                    primaryKey: true
+              - column:
+                  name: name
+                  type: VARCHAR(200)
+                  constraints:
+                    nullable: false
+
+  - changeSet:
+      id:  14062022-add-ForeignKeyConstraint-part-storage-to-part-infos
       author:  maksim_maevsky
       changes:
         - addForeignKeyConstraint:
             baseColumnNames: part_storage_id
-            baseTableName: parts
-            constraintName: fk_part_storages_parts
+            baseTableName: part_infos
+            constraintName: fk_part_info_storage_part
             referencedColumnNames: id
             referencedTableName: part_storages
+
+  - changeSet:
+      id:  14062022-add-ForeignKeyConstraint-part-id-to-part-infos
+      author:  maksim_maevsky
+      changes:
+        - addForeignKeyConstraint:
+            baseColumnNames: part_id
+            baseTableName: part_infos
+            constraintName: fk_part_info_part
+            referencedColumnNames: id
+            referencedTableName: parts
+
+  - changeSet:
+      id:  14062022-add-ForeignKeyConstraint-brand-id-to-parts
+      author:  maksim_maevsky
+      changes:
+        - addForeignKeyConstraint:
+            baseColumnNames: brand_id
+            baseTableName: parts
+            constraintName: fk_brand_part
+            referencedColumnNames: id
+            referencedTableName: brands
 
   - changeSet:
       id:  14062022-add-ForeignKeyConstraint-mail-id-to-file-info
@@ -145,6 +212,15 @@ databaseChangeLog:
             constraintName: fk_file_mail
             referencedColumnNames: id
             referencedTableName: mail_infos
+
+  - changeSet:
+      id: 14062022-add-unique-constraint-code-brand-to-parts
+      author:  maksim_maevsky
+      changes:
+        - addUniqueConstraint:
+            columnNames: code, brand_id
+            constraintName: const_code_brand_id_parts
+            tableName: parts
 
   - changeSet:
       id: 14062022-add-part-storage
