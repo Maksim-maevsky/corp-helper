@@ -19,7 +19,7 @@ public class PartInfo {
 
     private short partStorageId;
 
-    private UUID partId;
+    private Part part;
 
     private LocalDateTime createDate;
 

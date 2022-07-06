@@ -27,14 +27,14 @@ public class TransactionPartRepositoryImpl implements TransactionPartRepository 
     @Override
     public int save(PartInfo part) {
 
-        return jdbcTemplate.update(TransactionPartQuery.SAVE_TRANSACTION_PART_QUERY, part.getId(),
-                part.getCount(), part.getPartStorageId(), part.getPartId(), part.getCreateDate());
+        return jdbcTemplate.update(TransactionPartQuery.SAVE_TRANSACTION_PART_INFO_QUERY, part.getId(),
+                part.getCount(), part.getPartStorageId(), part.getPart().getId(), part.getCreateDate());
     }
 
     @Override
     public int[] saveAll(List<PartInfo> partInfos) {
 
-        return this.jdbcTemplate.batchUpdate(TransactionPartQuery.SAVE_TRANSACTION_PART_QUERY, new BatchPreparedStatementSetter() {
+        return this.jdbcTemplate.batchUpdate(TransactionPartQuery.SAVE_TRANSACTION_PART_INFO_QUERY, new BatchPreparedStatementSetter() {
 
             public void setValues(PreparedStatement ps, int i) throws SQLException {
 

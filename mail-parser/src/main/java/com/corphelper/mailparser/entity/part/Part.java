@@ -18,7 +18,7 @@ public class Part {
 
     private String description;
 
-    private int brand;
+    private Brand brand;
 
     private LocalDateTime createDate;
 

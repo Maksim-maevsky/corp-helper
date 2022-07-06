@@ -13,10 +13,7 @@ import com.corphelper.mailparser.exeption_handler.exception.EmptyFileNotFoundExc
 import com.corphelper.mailparser.exeption_handler.exception.WorkBookCreationIOException;
 import com.corphelper.mailparser.exeption_handler.exception.WrongPartStorageKeyException;
 import com.corphelper.mailparser.mapper.MailInfoMapper;
-import com.corphelper.mailparser.repository.FileInfoRepository;
-import com.corphelper.mailparser.repository.PartInfoRepository;
-import com.corphelper.mailparser.repository.PartRepository;
-import com.corphelper.mailparser.repository.TransactionPartRepository;
+import com.corphelper.mailparser.repository.*;
 import com.corphelper.mailparser.service.MailInfoService;
 import com.corphelper.mailparser.service.MailParserService;
 import com.corphelper.mailparser.util.FileUtil;
@@ -56,6 +53,8 @@ public class MailParserServiceImpl implements MailParserService {
     private final MailInfoService mailInfoService;
 
     private final PartRepository partRepository;
+
+    private final BrandRepository brandRepository;
 
     @Value("${file.path}")
     private String filePath;
@@ -163,8 +162,11 @@ public class MailParserServiceImpl implements MailParserService {
             }
 
             Row nextRow = firstSheet.getRow(currentRow);
-            PartInfo part = iterateOneRowAndGetPart(nextRow);
-            parts.add(part);
+            PartInfo partInfo = iterateOneRowAndGetPart(nextRow);
+
+            System.out.println(partInfo);
+
+            if(partInfo != null) parts.add(partInfo);
 
         }
     }
@@ -203,20 +205,36 @@ public class MailParserServiceImpl implements MailParserService {
 
         }
 
-        Optional<UUID> id = partRepository.getIdByCodeAndBrand(part.getCode(), brand.getName());
+        Optional<Brand> optionalBrand = brandRepository.getByName(brand.getName());
 
-//проверить бренд
+        if (optionalBrand.isPresent()) {
 
-        if (id.isPresent()) {
+            brand = optionalBrand.get();
+            Optional<UUID> id = partRepository.getIdByCodeAndBrand(part.getCode(), brand.getName());
 
-            partInfo.setId(id.get());
+            if (id.isPresent()) {
+
+                part.setId(id.get());
+
+            } else {
+
+                part.setCreateDate(LocalDateTime.now());
+                part.setId(UUID.randomUUID());
+                part.setBrand(brand);
+
+                partRepository.save(part);
+
+            }
+
+            partInfo.setPart(part);
+            return partInfo;
 
         } else {
 
-// сохранить деталь - получить id.
-        }
+            log.error("Brand " + brand.getName() + " is no present.");
+            return null;
 
-        return partInfo;
+        }
     }
 
     private void getAndSetCellTypeToPart(Cell cell, PartInfo partInfo, Part part, Brand brand, short column) {

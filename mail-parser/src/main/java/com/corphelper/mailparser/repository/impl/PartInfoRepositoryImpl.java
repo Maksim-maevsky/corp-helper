@@ -38,7 +38,7 @@ public class PartInfoRepositoryImpl implements PartInfoRepository {
     @Override
     public int save(PartInfo part) {
 
-        return jdbcTemplate.update(PartInfoQuery.SAVE_PART_INFO_QUERY, part.getId(), part.getCount(), part.getPartStorageId(), part.getPartId(), part.getCreateDate());
+        return jdbcTemplate.update(PartInfoQuery.SAVE_PART_INFO_QUERY, part.getId(), part.getCount(), part.getPartStorageId(), part.getPart().getId(), part.getCreateDate());
     }
 
     @Override

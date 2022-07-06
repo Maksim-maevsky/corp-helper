@@ -27,19 +27,19 @@ public class PartRepositoryImpl implements PartRepository {
     public int save(Part part) {
 
         return jdbcTemplate.update(PartQuery.SAVE_PART_QUERY, part.getId(), part.getCode(), part.getDescription(),
-                part.getBrand(), part.getCreateDate());
+                part.getBrand().getId(), part.getCreateDate());
     }
 
 
     @Override
     public Optional<UUID> getIdByCodeAndBrand(String code, String brandName) {
 
-        try{
+        try {
 
             return jdbcTemplate.queryForObject(
                     String.format(PartQuery.GET_PART_BY_CODE_AND_STORAGE_NAME, code, brandName), Optional.class);
 
-        }catch (EmptyResultDataAccessException exception){
+        } catch (EmptyResultDataAccessException exception) {
 
             return Optional.empty();
         }

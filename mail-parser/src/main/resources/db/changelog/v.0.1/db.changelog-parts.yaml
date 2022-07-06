@@ -139,6 +139,7 @@ databaseChangeLog:
               - column:
                   name: id
                   type: SMALLINT
+                  autoIncrement: true
                   constraints:
                     nullable: false
                     unique: true
@@ -159,6 +160,7 @@ databaseChangeLog:
               - column:
                   name: id
                   type: BIGINT
+                  autoIncrement: true
                   constraints:
                     nullable: false
                     unique: true
@@ -221,6 +223,15 @@ databaseChangeLog:
             columnNames: code, brand_id
             constraintName: const_code_brand_id_parts
             tableName: parts
+
+  - changeSet:
+      id: 14062022-add-unique-constraint-brand-name-to-brand
+      author:  maksim_maevsky
+      changes:
+        - addUniqueConstraint:
+            columnNames: name
+            constraintName: const_name_brands
+            tableName: brands
 
   - changeSet:
       id: 14062022-add-part-storage
