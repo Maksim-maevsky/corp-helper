@@ -1,8 +1,8 @@
 package com.corphelper.mailparser.repository.impl;
 
-import com.corphelper.mailparser.entity.PartInfo;
+import com.corphelper.mailparser.entity.part.PartInfo;
 import com.corphelper.mailparser.repository.PartInfoRepository;
-import com.corphelper.mailparser.repository.mapper.PartRowMapper;
+import com.corphelper.mailparser.repository.mapper.PartInfoRowMapper;
 import com.corphelper.mailparser.repository.mapper.prepared_statement.PartInfoPreparedStatementMapper;
 import com.corphelper.mailparser.repository.query.PartInfoQuery;
 import lombok.Data;
@@ -31,30 +31,30 @@ public class PartInfoRepositoryImpl implements PartInfoRepository {
     public void delete(short storagePartId) {
 
         Object[] args = new Object[]{storagePartId};
-        jdbcTemplate.update(PartInfoQuery.DELETE_PARTS_BY_STORAGE_ID, args);
+        jdbcTemplate.update(PartInfoQuery.DELETE_PARTS_INFO_BY_STORAGE_ID, args);
 
     }
 
     @Override
     public int save(PartInfo part) {
 
-        return jdbcTemplate.update(PartInfoQuery.SAVE_PART_QUERY, part.getId(), part.getCount(), part.getPartStorageId(), part.getPartId(), part.getCreateDate());
+        return jdbcTemplate.update(PartInfoQuery.SAVE_PART_INFO_QUERY, part.getId(), part.getCount(), part.getPartStorageId(), part.getPartId(), part.getCreateDate());
     }
 
     @Override
-    public int[] saveAll(List<PartInfo> parts) {
+    public int[] saveAll(List<PartInfo> partInfoList) {
 
-        return this.jdbcTemplate.batchUpdate(PartInfoQuery.SAVE_PART_QUERY, new BatchPreparedStatementSetter() {
+        return this.jdbcTemplate.batchUpdate(PartInfoQuery.SAVE_PART_INFO_QUERY, new BatchPreparedStatementSetter() {
 
             public void setValues(PreparedStatement ps, int i) throws SQLException {
 
-                partInfoPreparedStatementMapper.mapPreparedStatement(ps, parts.get(i));
+                partInfoPreparedStatementMapper.mapPreparedStatement(ps, partInfoList.get(i));
 
             }
 
             @Override
             public int getBatchSize() {
-                return parts.size();
+                return partInfoList.size();
             }
 
         });
@@ -65,7 +65,7 @@ public class PartInfoRepositoryImpl implements PartInfoRepository {
         String inSql = String.join(",", Collections.nCopies(partStorageNameSet.size(), "?"));
 
 
-        return jdbcTemplate.query(String.format(PartInfoQuery.GET_PARTS_BY_STORAGE_NAME, inSql), partStorageNameSet.toArray(), new PartRowMapper());
+        return jdbcTemplate.query(String.format(PartInfoQuery.GET_PARTS_INFO_BY_STORAGE_NAME, inSql), partStorageNameSet.toArray(), new PartInfoRowMapper());
 
     }
 }

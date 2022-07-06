@@ -1,6 +1,6 @@
 package com.corphelper.mailparser.repository;
 
-import com.corphelper.mailparser.entity.PartInfo;
+import com.corphelper.mailparser.entity.part.PartInfo;
 
 import java.util.List;
 import java.util.Set;

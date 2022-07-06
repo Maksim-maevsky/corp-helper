@@ -1,4 +1,4 @@
-package com.corphelper.mailparser.entity;
+package com.corphelper.mailparser.entity.part;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -7,18 +7,19 @@ import lombok.NoArgsConstructor;
 import java.time.LocalDateTime;
 import java.util.UUID;
 
+
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class Part {
+public class PartInfo {
 
     private UUID id;
 
-    private String code;
+    private int count;
 
-    private String description;
+    private short partStorageId;
 
-    private String brand;
+    private UUID partId;
 
     private LocalDateTime createDate;
 

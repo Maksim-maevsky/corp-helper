@@ -1,6 +1,6 @@
 package com.corphelper.mailparser.repository.mapper.prepared_statement;
 
-import com.corphelper.mailparser.entity.PartInfo;
+import com.corphelper.mailparser.entity.part.PartInfo;
 import org.springframework.stereotype.Component;
 
 import java.sql.PreparedStatement;

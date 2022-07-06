@@ -1,6 +1,6 @@
 package com.corphelper.mailparser.repository.impl;
 
-import com.corphelper.mailparser.entity.PartInfo;
+import com.corphelper.mailparser.entity.part.PartInfo;
 import com.corphelper.mailparser.repository.TransactionPartRepository;
 import com.corphelper.mailparser.repository.mapper.prepared_statement.PartInfoPreparedStatementMapper;
 import com.corphelper.mailparser.repository.query.TransactionPartQuery;

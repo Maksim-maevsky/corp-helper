@@ -3,13 +3,19 @@ package com.corphelper.mailparser.service.impl;
 import com.corphelper.mailparser.constant.ParserConstant;
 import com.corphelper.mailparser.constant.PartStorageConstant;
 import com.corphelper.mailparser.dto.MailInfoDto;
-import com.corphelper.mailparser.entity.*;
+import com.corphelper.mailparser.entity.FileInfo;
+import com.corphelper.mailparser.entity.MailInfo;
+import com.corphelper.mailparser.entity.part.Brand;
+import com.corphelper.mailparser.entity.part.Part;
+import com.corphelper.mailparser.entity.part.PartInfo;
+import com.corphelper.mailparser.entity.part.PartStorage;
 import com.corphelper.mailparser.exeption_handler.exception.EmptyFileNotFoundException;
 import com.corphelper.mailparser.exeption_handler.exception.WorkBookCreationIOException;
 import com.corphelper.mailparser.exeption_handler.exception.WrongPartStorageKeyException;
 import com.corphelper.mailparser.mapper.MailInfoMapper;
 import com.corphelper.mailparser.repository.FileInfoRepository;
 import com.corphelper.mailparser.repository.PartInfoRepository;
+import com.corphelper.mailparser.repository.PartRepository;
 import com.corphelper.mailparser.repository.TransactionPartRepository;
 import com.corphelper.mailparser.service.MailInfoService;
 import com.corphelper.mailparser.service.MailParserService;
@@ -33,7 +39,6 @@ import java.util.Optional;
 import java.util.UUID;
 
 
-
 @Service
 @Data
 @Slf4j
@@ -49,6 +54,8 @@ public class MailParserServiceImpl implements MailParserService {
     private final FileInfoRepository fileInfoRepository;
 
     private final MailInfoService mailInfoService;
+
+    private final PartRepository partRepository;
 
     @Value("${file.path}")
     private String filePath;
@@ -113,11 +120,11 @@ public class MailParserServiceImpl implements MailParserService {
         return fileInfo.getFileName() + "." + fileInfo.getExtension();
     }
 
-    private void deletePreviousPartsAndSaveCurrent(List<PartInfo> parts, short partStorageId) {
+    private void deletePreviousPartsAndSaveCurrent(List<PartInfo> partInfoList, short partStorageId) {
 
         partInfoRepository.delete(partStorageId);
-        partInfoRepository.saveAll(parts);
-        transactionPartRepository.saveAll(parts);
+        partInfoRepository.saveAll(partInfoList);
+        transactionPartRepository.saveAll(partInfoList);
 
     }
 
@@ -186,19 +193,33 @@ public class MailParserServiceImpl implements MailParserService {
 
         PartInfo partInfo = new PartInfo();
         Part part = new Part();
+        Brand brand = new Brand();
 
         for (short currentColumn = 0; currentColumn <= 5; currentColumn++) {
 
             Cell cell = nextRow.getCell(currentColumn);
-            getAndSetCellTypeToPart(cell, partInfo, part, currentColumn);
+            getAndSetCellTypeToPart(cell, partInfo, part, brand, currentColumn);
             partInfo.setCreateDate(LocalDateTime.now());
 
+        }
+
+        Optional<UUID> id = partRepository.getIdByCodeAndBrand(part.getCode(), brand.getName());
+
+//проверить бренд
+
+        if (id.isPresent()) {
+
+            partInfo.setId(id.get());
+
+        } else {
+
+// сохранить деталь - получить id.
         }
 
         return partInfo;
     }
 
-    private void getAndSetCellTypeToPart(Cell cell, PartInfo partInfo, Part part, short column) {
+    private void getAndSetCellTypeToPart(Cell cell, PartInfo partInfo, Part part, Brand brand, short column) {
 
         switch (column) {
 
@@ -207,7 +228,7 @@ public class MailParserServiceImpl implements MailParserService {
                 break;
 
             case 1:
-                part.setBrand(cell.getStringCellValue());
+                brand.setName(cell.getStringCellValue());
                 break;
 
             case 2:

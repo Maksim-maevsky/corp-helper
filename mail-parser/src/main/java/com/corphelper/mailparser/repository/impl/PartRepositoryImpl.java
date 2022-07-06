@@ -1,23 +1,17 @@
 package com.corphelper.mailparser.repository.impl;
 
-import com.corphelper.mailparser.entity.Part;
-import com.corphelper.mailparser.entity.PartInfo;
+import com.corphelper.mailparser.entity.part.Part;
 import com.corphelper.mailparser.repository.PartRepository;
-import com.corphelper.mailparser.repository.mapper.PartRowMapper;
 import com.corphelper.mailparser.repository.mapper.prepared_statement.PartInfoPreparedStatementMapper;
-import com.corphelper.mailparser.repository.query.PartInfoQuery;
 import com.corphelper.mailparser.repository.query.PartQuery;
 import lombok.Data;
 import lombok.RequiredArgsConstructor;
-import org.springframework.jdbc.core.BatchPreparedStatementSetter;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
 
-import java.sql.PreparedStatement;
-import java.sql.SQLException;
-import java.util.Collections;
-import java.util.List;
-import java.util.Set;
+import java.util.Optional;
+import java.util.UUID;
 
 @Data
 @RequiredArgsConstructor
@@ -37,12 +31,17 @@ public class PartRepositoryImpl implements PartRepository {
     }
 
 
-//    @Override
-//    public Part getByCodeAndBrand(String Code, String brand) {
-//        String inSql = String.join(",", Collections.nCopies(partStorageNameSet.size(), "?"));
-//
-//
-//        return jdbcTemplate.query(String.format(PartInfoQuery.GET_PARTS_BY_STORAGE_NAME, inSql), partStorageNameSet.toArray(), new PartRowMapper());
-//
-//    }
+    @Override
+    public Optional<UUID> getIdByCodeAndBrand(String code, String brandName) {
+
+        try{
+
+            return jdbcTemplate.queryForObject(
+                    String.format(PartQuery.GET_PART_BY_CODE_AND_STORAGE_NAME, code, brandName), Optional.class);
+
+        }catch (EmptyResultDataAccessException exception){
+
+            return Optional.empty();
+        }
+    }
 }

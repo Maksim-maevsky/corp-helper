@@ -1,11 +1,14 @@
 package com.corphelper.mailparser.repository;
 
-import com.corphelper.mailparser.entity.Part;
+import com.corphelper.mailparser.entity.part.Part;
+
+import java.util.Optional;
+import java.util.UUID;
 
 public interface PartRepository {
 
-    public int save(Part part);
+    int save(Part part);
 
-//    public Part getByCodeAndBrand(String Code, String brand);
+    Optional<UUID> getIdByCodeAndBrand(String Code, String brand);
 
 }

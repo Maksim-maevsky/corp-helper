@@ -1,24 +1,26 @@
 package com.corphelper.mailparser.repository.mapper;
 
-import com.corphelper.mailparser.entity.PartInfo;
+import com.corphelper.mailparser.entity.part.Part;
+import com.corphelper.mailparser.entity.part.PartInfo;
 import org.springframework.jdbc.core.RowMapper;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
-public class PartRowMapper implements RowMapper<PartInfo> {
+public class PartRowMapper implements RowMapper<Part> {
 
 
     @Override
-    public PartInfo mapRow(ResultSet rs, int rowNum) throws SQLException {
+    public Part mapRow(ResultSet rs, int rowNum) throws SQLException {
 
-        PartInfo part = new PartInfo();
+        Part part = new Part();
 
         part.setId(rs.getObject("id", java.util.UUID.class));
+        part.setCode(rs.getString("code"));
         part.setCreateDate(rs.getTimestamp("create_date").toLocalDateTime());
-        part.setPartId(rs.getObject("part_id", java.util.UUID.class));
-        part.setCount(rs.getInt("count"));
-        part.setPartStorageId(rs.getShort("part_storage_id"));
+        //partInfo.setPart(rs.getObject("part_id", java.util.UUID.class));
+//        part.setCount(rs.getInt("count"));
+//        part.setPartStorageId(rs.getShort("part_storage_id"));
 
         return part;
     }

@@ -4,7 +4,7 @@ import com.corphelper.mailparser.constant.PartStorageConstant;
 import com.corphelper.mailparser.dto.PartStorageInfoDto;
 import com.corphelper.mailparser.dto.RefillRequestDto;
 import com.corphelper.mailparser.dto.RefillResponseDto;
-import com.corphelper.mailparser.entity.PartInfo;
+import com.corphelper.mailparser.entity.part.PartInfo;
 import com.corphelper.mailparser.exeption_handler.exception.WrongPartStorageNameException;
 import com.corphelper.mailparser.repository.PartInfoRepository;
 import com.corphelper.mailparser.service.PartService;
@@ -26,6 +26,7 @@ public class PartServiceImpl implements PartService {
     private final PartInfoRepository partInfoRepository;
 
 
+    @Override
     public RefillResponseDto getRefilledInfo(RefillRequestDto refillRequestDto) {
 
         log.info("Create RefillResponseDto by part storage names ");

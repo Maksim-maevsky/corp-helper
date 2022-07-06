@@ -1,6 +1,6 @@
 package com.corphelper.mailparser.constant;
 
-import com.corphelper.mailparser.entity.PartStorage;
+import com.corphelper.mailparser.entity.part.PartStorage;
 
 import java.util.Map;
 import java.util.Set;
