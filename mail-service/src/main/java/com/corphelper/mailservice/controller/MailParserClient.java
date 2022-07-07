@@ -7,10 +7,10 @@ import org.springframework.web.bind.annotation.PostMapping;
 import java.util.List;
 
 
-@FeignClient("MAIL-PARSER-SERVICE")
+@FeignClient("FILE-SERVICE")
 public interface MailParserClient {
 
-    @PostMapping("/mail-parser")
+    @PostMapping("/file-service")
     void parse(List<MailInfo> mailInfos);
 
 }

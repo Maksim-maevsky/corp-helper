@@ -1,8 +1,8 @@
 package com.corphelper.mailservice.controller;
 
 import com.corphelper.mailservice.MailNotificationPreparerFacade;
+import com.corphelper.mailservice.dto.RefillResultDto;
 import com.corphelper.mailservice.pojo.MailInfo;
-import com.corphelper.mailservice.pojo.RefillResultDto;
 import com.corphelper.mailservice.service.MailCheckerService;
 import lombok.Data;
 import lombok.RequiredArgsConstructor;

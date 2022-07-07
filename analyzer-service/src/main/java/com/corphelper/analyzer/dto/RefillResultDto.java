@@ -17,6 +17,8 @@ public class RefillResultDto implements Serializable {
 
     private Set<String> currentPartStorageName;
 
-    private List<PartDto> resultPartDtoList;
+    private List<PartInfoDto> resultPartInfoDtoList;
+
+    private FileInfoDto fileInfoDto;
 
 }

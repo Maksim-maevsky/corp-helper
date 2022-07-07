@@ -1,0 +1,17 @@
+spring:
+  application:
+    name: file-service
+  cloud:
+    config:
+      uri: http://localhost:9888
+  datasource:
+    driver-class-name: org.postgresql.Driver
+    password: root
+    url: jdbc:postgresql://localhost:5432/price_parser
+    username: postgres
+    sql:
+      init:
+        mode: always
+
+file:
+  path: "/corp-helper/file-service/file-store1/"

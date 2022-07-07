@@ -2,9 +2,9 @@ package com.corphelper.mailservice.service.impl;
 
 
 import com.corphelper.mailservice.constant.MailConstant;
+import com.corphelper.mailservice.dto.PartInfoDto;
 import com.corphelper.mailservice.pojo.MailNotificationInfo;
-import com.corphelper.mailservice.pojo.PartDto;
-import com.corphelper.mailservice.pojo.RefillResultDto;
+import com.corphelper.mailservice.dto.RefillResultDto;
 import com.corphelper.mailservice.service.MailPreparerService;
 import lombok.Data;
 import lombok.RequiredArgsConstructor;
@@ -35,23 +35,25 @@ public class MailPreparerServiceImpl implements MailPreparerService {
 
         String targetStores = getPartStorageString(refillResultDto.getTargetPartStorageName());
         String currentStores = getPartStorageString(refillResultDto.getCurrentPartStorageName());
-        String message = getRefillMessage(refillResultDto.getResultPartDtoList());
+        String message = getRefillMessage(refillResultDto.getResultPartInfoDtoList());
         String topic = String.format(MailConstant.REFILLING_MESSAGE_TOPIC, targetStores, currentStores);
 
         mailNotificationInfo.setSubject(topic);
         mailNotificationInfo.setTo("kantasenadas@gmail.com");
         mailNotificationInfo.setMessage(message);
+        mailNotificationInfo.setFileInfoDto(refillResultDto.getFileInfoDto());
 
         return mailNotificationInfo;
     }
 
-    private String getRefillMessage(List<PartDto> parts) {
+    private String getRefillMessage(List<PartInfoDto> partInfoDtoList) {
 
         log.info("Try to complete message text.");
 
-        return parts.stream()
-                .map(part -> String.format(MailConstant.REFILLING_MESSAGE_PART, part.getCode(), part.getBrand(),
-                        part.getDescription(), part.getCount()))
+        return partInfoDtoList.stream()
+                .map(partInfo -> String.format(MailConstant.REFILLING_MESSAGE_PART, partInfo.getPart().getCode(),
+                        partInfo.getPart().getBrand().getName(),
+                        partInfo.getPart().getDescription(), partInfo.getCount()))
                 .collect(Collectors.joining(MailConstant.STRING_JOINER_DELIMITER));
     }
 

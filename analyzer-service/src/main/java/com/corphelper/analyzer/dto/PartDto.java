@@ -19,12 +19,8 @@ public class PartDto {
 
     private String description;
 
+    private BrandDto brand;
+
     private LocalDateTime createDate;
-
-    private String brand;
-
-    private int count;
-
-    private short partStorageId;
 
 }

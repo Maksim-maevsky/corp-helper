@@ -15,6 +15,6 @@ public class PartStorageInfoDto {
 
     private Set<String> partStorageNameSet;
 
-    private List<PartDto> partList;
+    private List<PartInfoDto> partList;
 
 }
