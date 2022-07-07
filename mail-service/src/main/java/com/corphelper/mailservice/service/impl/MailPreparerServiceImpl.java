@@ -41,6 +41,7 @@ public class MailPreparerServiceImpl implements MailPreparerService {
         mailNotificationInfo.setSubject(topic);
         mailNotificationInfo.setTo("kantasenadas@gmail.com");
         mailNotificationInfo.setMessage(message);
+        mailNotificationInfo.setFileInfoDto(refillResultDto.getFileInfoDto());
 
         return mailNotificationInfo;
     }

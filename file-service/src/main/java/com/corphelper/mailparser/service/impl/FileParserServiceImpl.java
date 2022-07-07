@@ -15,7 +15,7 @@ import com.corphelper.mailparser.exeption_handler.exception.WrongPartStorageKeyE
 import com.corphelper.mailparser.mapper.MailInfoMapper;
 import com.corphelper.mailparser.repository.*;
 import com.corphelper.mailparser.service.MailInfoService;
-import com.corphelper.mailparser.service.MailParserService;
+import com.corphelper.mailparser.service.FileParserService;
 import com.corphelper.mailparser.util.FileUtil;
 import lombok.Data;
 import lombok.RequiredArgsConstructor;
@@ -24,6 +24,7 @@ import org.apache.poi.ss.usermodel.*;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -40,7 +41,7 @@ import java.util.UUID;
 @Data
 @Slf4j
 @RequiredArgsConstructor
-public class MailParserServiceImpl implements MailParserService {
+public class FileParserServiceImpl implements FileParserService {
 
     private final MailInfoMapper mailInfoMapper;
 
@@ -75,6 +76,7 @@ public class MailParserServiceImpl implements MailParserService {
         parsMailInfos(mailInfoList);
 
     }
+
 
     private void parsMailInfos(List<MailInfo> mailInfoList) {
 

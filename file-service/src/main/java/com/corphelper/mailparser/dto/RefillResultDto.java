@@ -1,4 +1,4 @@
-package com.corphelper.analyzer.dto;
+package com.corphelper.mailparser.dto;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -18,7 +18,5 @@ public class RefillResultDto implements Serializable {
     private Set<String> currentPartStorageName;
 
     private List<PartInfoDto> resultPartInfoDtoList;
-
-    private FileInfoDto fileInfoDto;
 
 }

@@ -2,14 +2,14 @@ package com.corphelper.mailservice.service.impl;
 
 import com.corphelper.mailservice.pojo.MailNotificationInfo;
 import com.corphelper.mailservice.service.MailNotificationService;
+import com.corphelper.mailservice.util.MimeMessageCreator;
 import lombok.Data;
 import lombok.RequiredArgsConstructor;
+import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.mail.javamail.JavaMailSender;
-import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.stereotype.Service;
 
-import javax.mail.MessagingException;
 import javax.mail.internet.MimeMessage;
 
 @Data
@@ -18,41 +18,22 @@ import javax.mail.internet.MimeMessage;
 @Service
 public class MailNotificationServiceImpl implements MailNotificationService {
 
-
     private final JavaMailSender emailSender;
 
+    private final MimeMessageCreator mimeMessageCreator;
 
+
+    @SneakyThrows
     @Override
     public void send(MailNotificationInfo mailNotificationInfo) {
 
         log.info("Try to sen message.");
 
-        MimeMessage mimeMessage = emailSender.createMimeMessage();
-        trySetDataMimeMessage(mailNotificationInfo, mimeMessage);
+        MimeMessage mimeMessage = mimeMessageCreator.getMimeMessage(mailNotificationInfo);
 
         emailSender.send(mimeMessage);
 
         log.info("Message was sent");
 
-    }
-
-    private void trySetDataMimeMessage(MailNotificationInfo notification, MimeMessage mimeMessage) {
-
-        log.info("Try to create mimeMessage.");
-
-        MimeMessageHelper helper = new MimeMessageHelper(mimeMessage, "utf-8");
-
-        try {
-
-            helper.setText(notification.getMessage(), true);
-            helper.setTo(notification.getTo());
-            helper.setSubject(notification.getSubject());
-            helper.setFrom(notification.getFrom());
-
-        } catch (MessagingException e) {
-
-            e.printStackTrace();
-
-        }
     }
 }
