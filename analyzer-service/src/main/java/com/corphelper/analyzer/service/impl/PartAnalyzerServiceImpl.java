@@ -1,7 +1,7 @@
 package com.corphelper.analyzer.service.impl;
 
 
-import com.corphelper.analyzer.dto.PartDto;
+import com.corphelper.analyzer.dto.PartInfoDto;
 import com.corphelper.analyzer.dto.RefillResponseDto;
 import com.corphelper.analyzer.dto.RefillResultDto;
 import com.corphelper.analyzer.service.PartAnalyzerService;
@@ -22,12 +22,12 @@ public class PartAnalyzerServiceImpl implements PartAnalyzerService {
     @Override
     public RefillResultDto getRefillPartStorageInfo(RefillResponseDto refillResponseDto) {
 
-        List<PartDto> resultPartDtoList = getResultPartDtoList(refillResponseDto);
+        List<PartInfoDto> resultPartInfoDtoList = getResultPartDtoList(refillResponseDto);
 
-        return  getRefillResultDto(refillResponseDto, resultPartDtoList);
+        return  getRefillResultDto(refillResponseDto, resultPartInfoDtoList);
     }
 
-    private RefillResultDto getRefillResultDto(RefillResponseDto refillResponseDto, List<PartDto> resultPartDtoList) {
+    private RefillResultDto getRefillResultDto(RefillResponseDto refillResponseDto, List<PartInfoDto> resultPartInfoDtoList) {
 
         log.info("Get refillResultDto");
 
@@ -36,35 +36,37 @@ public class PartAnalyzerServiceImpl implements PartAnalyzerService {
         Set<String> currentPartStorageNameSet = refillResponseDto.getCurrentPartStorageInfoDto().getPartStorageNameSet();
         Set<String> targetPartStorageNameSet = refillResponseDto.getTargetPartStorageInfoDto().getPartStorageNameSet();
 
-        refillResultDto.setResultPartDtoList(resultPartDtoList);
+        refillResultDto.setResultPartInfoDtoList(resultPartInfoDtoList);
         refillResultDto.setCurrentPartStorageName(currentPartStorageNameSet);
         refillResultDto.setTargetPartStorageName(targetPartStorageNameSet);
 
         return refillResultDto;
     }
 
-    private List<PartDto> getResultPartDtoList(RefillResponseDto refillResponseDto) {
+    private List<PartInfoDto> getResultPartDtoList(RefillResponseDto refillResponseDto) {
 
         log.info("try to compare target and current list and get result list.");
 
-        List<PartDto> resultPartDtoList = new ArrayList<>();
+        List<PartInfoDto> resultPartInfoDtoList = new ArrayList<>();
 
-        for (PartDto currentPart : refillResponseDto.getCurrentPartStorageInfoDto().getPartList()){
+        for (PartInfoDto currentPart : refillResponseDto.getCurrentPartStorageInfoDto().getPartList()){
 
-            iterateByTargetPartDtoListAndSetToResultPartDtoList(refillResponseDto, resultPartDtoList, currentPart);
+            iterateByTargetPartDtoListAndSetToResultPartDtoList(refillResponseDto, resultPartInfoDtoList, currentPart);
 
         }
 
-        return resultPartDtoList;
+        return resultPartInfoDtoList;
     }
 
-    private void iterateByTargetPartDtoListAndSetToResultPartDtoList(RefillResponseDto refillResponseDto, List<PartDto> resultPartDtoList, PartDto currentPart) {
+    private void iterateByTargetPartDtoListAndSetToResultPartDtoList(RefillResponseDto refillResponseDto,
+                                                                     List<PartInfoDto> resultPartInfoDtoList,
+                                                                     PartInfoDto currentPartInfo) {
 
         int matchCount = 0;
 
-        for(PartDto targetPart : refillResponseDto.getTargetPartStorageInfoDto().getPartList()){
+        for(PartInfoDto targetPartInfo : refillResponseDto.getTargetPartStorageInfoDto().getPartList()){
 
-            if (currentPart.getCode().equals(targetPart.getCode())){
+            if (currentPartInfo.getPart().getCode().equals(targetPartInfo.getPart().getCode())){
 
                 matchCount++;
 
@@ -73,7 +75,7 @@ public class PartAnalyzerServiceImpl implements PartAnalyzerService {
 
         if(matchCount == 0){
 
-            resultPartDtoList.add(currentPart);
+            resultPartInfoDtoList.add(currentPartInfo);
 
         }
     }

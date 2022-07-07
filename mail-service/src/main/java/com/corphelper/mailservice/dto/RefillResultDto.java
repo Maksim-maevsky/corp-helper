@@ -1,4 +1,4 @@
-package com.corphelper.analyzer.dto;
+package com.corphelper.mailservice.dto;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;

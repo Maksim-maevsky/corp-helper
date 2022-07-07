@@ -7,10 +7,10 @@ import org.springframework.web.bind.annotation.RequestParam;
 
 import java.util.Set;
 
-@FeignClient("MAIL-PARSER-SERVICE")
+@FeignClient("FILE-SERVICE")
 public interface MailParserClient {
 
-    @GetMapping(value = "/mail-parser/refilling")
+    @GetMapping(value = "/file-service/refilling")
     RefillResponseDto getRefillDto(@RequestParam("target") Set<String> target, @RequestParam("current") Set<String> current);
 
 }

@@ -11,16 +11,10 @@ import java.util.UUID;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class PartDto {
+public class BrandDto {
 
-    private UUID id;
+    private int id;
 
-    private String code;
-
-    private String description;
-
-    private BrandDto brand;
-
-    private LocalDateTime createDate;
+    private String name;
 
 }

@@ -1,4 +1,4 @@
-package com.corphelper.analyzer.dto;
+package com.corphelper.mailservice.dto;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -11,15 +11,15 @@ import java.util.UUID;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class PartDto {
+public class PartInfoDto {
 
     private UUID id;
 
-    private String code;
+    private int count;
 
-    private String description;
+    private short partStorageId;
 
-    private BrandDto brand;
+    private PartDto part;
 
     private LocalDateTime createDate;
 
