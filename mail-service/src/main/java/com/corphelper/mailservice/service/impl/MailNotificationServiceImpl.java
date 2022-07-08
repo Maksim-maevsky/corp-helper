@@ -27,7 +27,7 @@ public class MailNotificationServiceImpl implements MailNotificationService {
     @Override
     public void send(MailNotificationInfo mailNotificationInfo) {
 
-        log.info("Try to sen message.");
+        log.info("Try to send message.");
 
         MimeMessage mimeMessage = mimeMessageCreator.getMimeMessage(mailNotificationInfo);
 
