@@ -1,11 +1,15 @@
+server:
+  port: 8761
+
 spring:
   application:
     name: discovery-service
-  cloud:
-    config:
-      uri: http://localhost:9888
 
 eureka:
+  instance:
+    hostname: discovery-service
+    prefer-ip-address: true
   client:
     register-with-eureka: false
     fetch-registry: false
+

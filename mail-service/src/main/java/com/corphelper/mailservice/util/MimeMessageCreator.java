@@ -1,5 +1,6 @@
 package com.corphelper.mailservice.util;
 
+import com.corphelper.mailservice.constant.MimeMessageConstant;
 import com.corphelper.mailservice.pojo.MailNotificationInfo;
 import lombok.Data;
 import lombok.RequiredArgsConstructor;
@@ -26,19 +27,13 @@ import static javax.mail.Message.RecipientType.TO;
 @RequiredArgsConstructor
 public class MimeMessageCreator {
 
-    private static final String SUBTYPE_ALTERNATIVE = "alternative";
-    private static final String SUBTYPE_MIXED = "mixed";
-    private static final String INPUT_STREAM_DATA_SOURCE_CONTENT_TYPE = "application/octet-stream";
-    private static final String CHARSET_TYPE = "UTF-8";
-    private static final String MIME_BODY_PART_CONTENT_PART = "text/html; charset=UTF-8";
-
-
     public MimeMessage getMimeMessage(MailNotificationInfo mailNotificationInfo) {
 
         Session session = Session.getInstance(new Properties(System.getProperties()));
         MimeMessage mimeMessage = new MimeMessage(session);
-        MimeMultipart message = new MimeMultipart(SUBTYPE_MIXED);
+        MimeMultipart message = new MimeMultipart(MimeMessageConstant.SUBTYPE_MIXED);
         trySetDataToMimeMessage(mimeMessage, mailNotificationInfo, message, mailNotificationInfo.getFrom(), mailNotificationInfo.getTo());
+
         return mimeMessage;
     }
 
@@ -47,7 +42,7 @@ public class MimeMessageCreator {
 
         try {
 
-            mimeMessage.setSubject(notification.getSubject(), CHARSET_TYPE);
+            mimeMessage.setSubject(notification.getSubject(), MimeMessageConstant.CHARSET_TYPE);
             mimeMessage.setFrom(from);
             mimeMessage.addRecipients(TO, recipients);
             trySetAttachmentAndTextToTheMessage(notification, message);
@@ -81,11 +76,11 @@ public class MimeMessageCreator {
 
         try {
 
-            MimeMultipart messageBody = new MimeMultipart(SUBTYPE_ALTERNATIVE);
+            MimeMultipart messageBody = new MimeMultipart(MimeMessageConstant.SUBTYPE_ALTERNATIVE);
             MimeBodyPart wrapper = new MimeBodyPart();
             MimeBodyPart htmlPart = new MimeBodyPart();
 
-            htmlPart.setContent(notification.getMessage(), MIME_BODY_PART_CONTENT_PART);
+            htmlPart.setContent(notification.getMessage(), MimeMessageConstant.MIME_BODY_PART_CONTENT_PART);
             messageBody.addBodyPart(htmlPart);
             wrapper.setContent(messageBody);
 
@@ -114,7 +109,7 @@ public class MimeMessageCreator {
 
         try {
 
-            InputStreamDataSource inputStreamDataSource = new InputStreamDataSource(INPUT_STREAM_DATA_SOURCE_CONTENT_TYPE,
+            InputStreamDataSource inputStreamDataSource = new InputStreamDataSource(MimeMessageConstant.INPUT_STREAM_DATA_SOURCE_CONTENT_TYPE,
                     fullName,
                     inputStream);
             messageBodyPart.setDataHandler(new DataHandler(inputStreamDataSource));

@@ -3,7 +3,7 @@ spring:
     name: mail-service
   cloud:
     config:
-      uri: http://localhost:9888
+      uri: http://config-service:9888
   mail:
     host: smtp.yandex.ru
     port: 587
@@ -14,3 +14,10 @@ spring:
       auth: true
       starttls.enable: true
       ssl.trust: smtp.yandex.ru
+
+eureka:
+  instance:
+    prefer-ip-address: true
+  client:
+    serviceUrl:
+      defaultZone: ${EUREKA_URI:http://discovery-service:8761/eureka/}

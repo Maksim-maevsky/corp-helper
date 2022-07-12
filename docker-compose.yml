@@ -1,0 +1,104 @@
+version: '3'
+
+volumes:
+  storage-data:
+
+services:
+
+  config_service:
+    container_name: config_service
+    restart: always
+    hostname: config-service
+    build:
+      context: ./config-server
+    ports:
+      - 9888:9888
+    depends_on:
+      discovery_service:
+        condition: service_healthy
+    networks:
+      - default
+
+  discovery_service:
+    container_name: discovery_service
+    restart: always
+    hostname: discovery-service
+    build:
+      context: ./discovery-service/
+    ports:
+      - 8761:8761
+    healthcheck:
+      test: [
+        "CMD-SHELL",
+        "_JAVA_OPTIONS=",
+        "java", "-cp",
+        "com.app.health.HealthCheck",
+        "http://localhost:8761/check"
+      ]
+      interval: 10s
+      timeout: 8s
+      retries: 3
+    networks:
+      - default
+
+#  mail_service:
+#    container_name: mail_service
+#    restart: always
+#    build:
+#      context: ./mail-service/
+#    ports:
+#      - 9881:9881
+#    depends_on:
+#      - discovery_service
+#      - config_service
+#    entrypoint: ["wait-for-it.sh", "-s" ,"-t", "20", "discovery_service:8761", "--"]
+#    networks:
+#      - default
+#
+#  file_service:
+#    container_name: file_service
+#    restart: always
+#    build:
+#      context: ./file-service
+#    environment:
+#      SPRING_DATASOURCE_URL: jdbc:postgresql://file_service_database:5432/part_storage
+#      SPRING_DATASOURCE_PASSWORD: root
+#      SPRING_DATASOURCE_USERNAME: postgres
+#    ports:
+#      - 9882:9882
+#    depends_on:
+#      - discovery_service
+#      - file_service_database
+#      - config_service
+#    entrypoint: ["wait.sh", "-s" ,"-t", "20", "discovery_service:8761", "--"]
+#    networks:
+#      - default
+#
+#  analyzer_service:
+#    container_name: analyzer_service
+#    restart: always
+#    build:
+#      context: ./analyzer-service/
+#    ports:
+#      - 9883:9883
+#    depends_on:
+#      - discovery_service
+#      - config_service
+#    entrypoint: ["wait-for-it.sh", "-s" ,"-t", "20", "discovery_service:8761", "--"]
+#    networks:
+#      - default
+#
+#  file_service_database:
+#    container_name: postgres
+#    restart: always
+#    image: postgres:13
+#    ports:
+#      - 5432:5432
+#    volumes:
+#      - storage-data:/var/lib/postgresql/data
+#    environment:
+#      POSTGRES_PASSWORD: root
+#      POSTGRES_USER: postgres
+#      POSTGRES_DB: part_storage
+#    networks:
+#      - default

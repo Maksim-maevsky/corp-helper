@@ -1,6 +1,5 @@
 server:
   port: 9888
-
 spring:
   application:
     name: config-service
@@ -9,3 +8,17 @@ spring:
       server:
         git:
           uri: https://github.com/Maksim-maevsky/config-service
+
+eureka:
+  instance:
+    hostname: config-service
+    prefer-ip-address: true
+  client:
+    serviceUrl:
+      defaultZone: ${EUREKA_URI:http://discovery-service:8761/eureka/}
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: "*"

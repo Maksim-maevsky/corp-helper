@@ -3,4 +3,11 @@ spring:
     name: analyzer-service
   cloud:
     config:
-      uri: http://localhost:9888
+      uri: http://config-service:9888
+
+eureka:
+  instance:
+    prefer-ip-address: true
+  client:
+    serviceUrl:
+      defaultZone: ${EUREKA_URI:http://discovery-service:8761/eureka/}
