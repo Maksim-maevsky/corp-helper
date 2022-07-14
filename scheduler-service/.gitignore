@@ -1,0 +1,75 @@
+HELP.md
+target/
+!.mvn/wrapper/maven-wrapper.jar
+!**/src/main/**/target/
+!**/src/test/**/target/
+
+### STS ###
+.apt_generated
+.classpath
+.factorypath
+.project
+.settings
+.springBeans
+.sts4-cache
+
+### IntelliJ IDEA ###
+.idea
+*.iws
+*.iml
+*.ipr
+
+### NetBeans ###
+/nbproject/private/
+/nbbuild/
+/dist/
+/nbdist/
+/.nb-gradle/
+build/
+!**/src/main/**/build/
+!**/src/test/**/build/
+
+### VS Code ###
+.vscode/
+
+# Compiled class file
+*.class
+
+# Package Files #
+*.jar
+*.war
+*.rar
+
+# Build Artifacts
+build
+target
+out
+*.bak
+
+
+# Node artifacts
+node
+node_modules
+
+# Bower
+bower_components
+
+# Common
+*.log
+logs
+internship-cloud
+tokens
+.tmp
+.merge_file*
+coverage
+nb-configuration.xml
+src/main/resources/credentials.json
+img
+.docker
+#.env
+
+# Maven:
+/.mvn/
+/mvnw
+/mvnw.bat
+mvnw.cmd
