@@ -39,7 +39,7 @@ public class MailPreparerServiceImpl implements MailPreparerService {
         String topic = String.format(MailConstant.REFILLING_MESSAGE_TOPIC, targetStores, currentStores);
 
         mailNotificationInfo.setSubject(topic);
-        mailNotificationInfo.setTo("sm@opox.ru");
+        mailNotificationInfo.setTo("mm@opox.ru");
         mailNotificationInfo.setMessage(message);
         mailNotificationInfo.setFileInfoDto(refillResultDto.getFileInfoDto());
 
