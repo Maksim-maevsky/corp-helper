@@ -121,6 +121,22 @@ services:
     networks:
       - default
 
+  scheduler_service:
+    container_name: scheduler_service
+    restart: always
+    build:
+      context: ./scheduler-service/
+    ports:
+      - 9884:9884
+    environment:
+      SPRING_CLOUD_CONFIG_URI: ${SPRING_CLOUD_CONFIG_URI}
+      EUREKA_CLIENT_SERVICEURL_DEFAULTZONE: ${EUREKA_URI}
+    depends_on:
+      config_service:
+        condition: service_healthy
+    networks:
+      - default
+
   pgadmin:
     image: dpage/pgadmin4
     container_name: pgadmin
